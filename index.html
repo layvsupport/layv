@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AISpace Control Center</title>
+    <link rel="stylesheet" href="./src/css/reset.css?v=2" />
+    <link rel="stylesheet" href="./src/css/base.css?v=2" />
+    <link rel="stylesheet" href="./src/css/layout.css?v=2" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="AI 서비스 목록">
+        <div class="sidebar__profile">
+          <button type="button" class="sidebar__profile-main" id="profile-btn" aria-label="프로필">
+            <div class="sidebar__profile-avatar">
+              <span class="sidebar__profile-avatar-text">U</span>
+            </div>
+            <span class="sidebar__profile-name">사용자</span>
+          </button>
+          <button type="button" class="sidebar__profile-settings" id="settings-btn" aria-label="설정" title="설정">
+            <span class="sidebar__profile-settings-icon">⚙️</span>
+          </button>
+        </div>
+
+        <nav class="sidebar__apps-wrapper" aria-label="AI 아이콘">
+          <div class="sidebar__apps" id="ai-app-list"></div>
+        </nav>
+
+        <section class="sidebar__composer" aria-label="빠른 실행">
+          <h2 class="sidebar__composer-title">빠른 실행</h2>
+          <p class="sidebar__composer-hint">명령어로 AI를 빠르게 실행하세요. 예: /c (ChatGPT)</p>
+          <input
+            type="text"
+            id="quick-command"
+            class="sidebar__composer-input"
+            placeholder="/c, /cl, /g, /pi..."
+          />
+          <span class="sidebar__composer-feedback" id="composer-feedback" role="status" aria-live="polite"></span>
+        </section>
+        
+        <section class="sidebar__broadcast" aria-label="일괄 프롬프트">
+          <h2 class="sidebar__broadcast-title">일괄 프롬프트 전송</h2>
+          <p class="sidebar__broadcast-hint">ON된 모든 AI 창에 동시에 프롬프트를 전송합니다</p>
+          <textarea
+            id="broadcast-prompt"
+            class="sidebar__broadcast-input"
+            placeholder="여기에 프롬프트를 입력하세요..."
+            rows="3"
+          ></textarea>
+          <div class="sidebar__broadcast-actions">
+            <button type="button" id="broadcast-btn" class="sidebar__broadcast-btn">
+              <span class="sidebar__broadcast-btn-icon">📤</span>
+              <span class="sidebar__broadcast-btn-text">전송</span>
+            </button>
+            <span class="sidebar__broadcast-status" id="broadcast-status"></span>
+          </div>
+        </section>
+      </aside>
+
+      <main class="workspace" aria-live="polite">
+        <header class="workspace__topbar">
+          <div class="workspace__tabs">
+            <div class="workspace__tabs-list" id="canvas-tabs" role="tablist"></div>
+            <button type="button" class="workspace__tabs-add" id="add-canvas-btn" title="새 캔버스 추가">+</button>
+          </div>
+          <div class="workspace__controls">
+            <label class="theme-toggle" for="theme-toggle" aria-label="테마 전환">
+              <input type="checkbox" id="theme-toggle" />
+              <span class="theme-toggle__track">
+                <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀️</span>
+                <span class="theme-toggle__thumb"></span>
+                <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">🌙</span>
+              </span>
+            </label>
+            <div class="workspace__status" id="workspace-status">0 / 6</div>
+          </div>
+        </header>
+
+        <section class="workspace__canvas" id="workspace-canvas" tabindex="0"></section>
+      </main>
+    </div>
+
+    <template id="window-template">
+      <article class="ai-window" role="group">
+        <header class="ai-window__header">
+          <div class="ai-window__meta">
+            <span class="ai-window__icon"></span>
+            <div class="ai-window__info">
+              <strong class="ai-window__title"></strong>
+              <span class="ai-window__subtitle">실시간 제어</span>
+            </div>
+          </div>
+          <div class="ai-window__actions">
+            <label class="ai-window__toggle" title="일괄 프롬프트 수신">
+              <input type="checkbox" class="ai-window__toggle-input" data-action="toggle-prompt" checked />
+              <span class="ai-window__toggle-indicator"></span>
+            </label>
+            <button class="ai-window__action" data-action="refresh" title="새로고침">
+              <span aria-hidden="true">⟳</span>
+            </button>
+            <button class="ai-window__action" data-action="close" title="닫기">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+        </header>
+        <div class="ai-window__content" data-frame-container></div>
+        <div class="ai-window__resize-handle" data-resize-handle aria-hidden="true"></div>
+      </article>
+    </template>
+
+    <script type="module" src="./src/js/app.js"></script>
+  </body>
+</html>
