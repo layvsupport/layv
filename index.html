@@ -4,58 +4,93 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>AISpace Control Center</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="./src/css/reset.css?v=2" />
     <link rel="stylesheet" href="./src/css/base.css?v=2" />
     <link rel="stylesheet" href="./src/css/layout.css?v=2" />
+    <script src="./src/js/RealGlass.standalone.js"></script>
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar" aria-label="AI 서비스 목록">
-        <div class="sidebar__profile">
-          <button type="button" class="sidebar__profile-main" id="profile-btn" aria-label="프로필">
-            <div class="sidebar__profile-avatar">
-              <span class="sidebar__profile-avatar-text">U</span>
+        <!-- LAYV 로고 및 타이틀 -->
+        <div class="sidebar__header">
+          <div class="sidebar__header-content">
+            <div class="sidebar__logo">
+              <svg width="39" height="39" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M38.4248 12.0199C38.4248 11.5607 38.4248 11.1022 38.4222 10.643C38.4197 10.2569 38.4152 9.87005 38.4049 9.48388C38.3825 8.64174 38.3326 7.79255 38.1834 6.96001C38.0316 6.11467 37.7837 5.32824 37.3925 4.56038C37.0082 3.80534 36.5068 3.11561 35.908 2.51682C35.3092 1.91868 34.6195 1.41659 33.8644 1.03235C33.0972 0.641694 32.3108 0.393854 31.4661 0.242076C30.6329 0.0922195 29.7837 0.0429077 28.9416 0.0198528C28.5548 0.0096062 28.1686 0.00512331 27.7818 0.00256165C27.3232 0 26.8641 0 26.4049 0H12.0199C11.5614 0 11.1022 0 10.6437 0.00256165C10.2569 0.00512331 9.87005 0.0096062 9.48388 0.0198528C8.64174 0.0429077 7.79191 0.0922195 6.95937 0.242076C6.11467 0.393854 5.32824 0.641694 4.56102 1.03235C3.80598 1.41659 3.11561 1.91868 2.51747 2.51682C1.91868 3.11561 1.41723 3.80534 1.03299 4.56038C0.641694 5.32824 0.393854 6.11467 0.242076 6.96001C0.09286 7.79255 0.0429077 8.64174 0.0204932 9.48388C0.0102466 9.87005 0.00512331 10.2569 0.00320207 10.643C0 11.1022 0 11.5607 0 12.0199V26.4049C0 26.8641 0 27.3226 0.00320207 27.7818C0.00512331 28.1679 0.0102466 28.5548 0.0204932 28.9409C0.0429077 29.7831 0.09286 30.6323 0.242076 31.4648C0.393854 32.3101 0.641694 33.0972 1.03299 33.8651C1.41723 34.6195 1.91868 35.3092 2.51747 35.9073C3.11561 36.5068 3.80598 37.0082 4.56102 37.3925C5.32824 37.7831 6.11467 38.0309 6.95937 38.1827C7.79191 38.3319 8.64174 38.3825 9.48388 38.4049C9.87005 38.4152 10.2569 38.4197 10.6437 38.4222C11.1022 38.4248 11.5614 38.4248 12.0199 38.4248H26.4049C26.8641 38.4248 27.3232 38.4248 27.7818 38.4222C28.1686 38.4197 28.5548 38.4152 28.9416 38.4049C29.7837 38.3825 30.6329 38.3319 31.4661 38.1827C32.3108 38.0309 33.0972 37.7831 33.8644 37.3925C34.6195 37.0082 35.3092 36.5068 35.908 35.9073C36.5068 35.3092 37.0082 34.6195 37.3925 33.8651C37.7837 33.0972 38.0316 32.3101 38.1834 31.4648C38.3326 30.6323 38.3825 29.7831 38.4049 28.9409C38.4152 28.5548 38.4197 28.1679 38.4222 27.7818C38.4248 27.3226 38.4248 26.8641 38.4248 26.4049V12.0199Z" fill="#222222"/>
+                <path d="M24.9846 29.0276H10.5577C9.87793 29.0276 9.32812 28.4778 9.32812 27.798V13.3834C9.32812 13.0567 9.4581 12.744 9.68822 12.5139L12.4812 9.72092C12.7113 9.4908 13.024 9.36082 13.3507 9.36082H27.7653C28.4451 9.36082 28.9949 9.91063 28.9949 10.5904V25.012C28.9949 25.337 28.8649 25.6497 28.6348 25.8815L25.8541 28.6675C25.624 28.8994 25.3096 29.0276 24.9846 29.0276Z" fill="url(#paint0_linear_126_938)"/>
+                <defs>
+                  <linearGradient id="paint0_linear_126_938" x1="30.0389" y1="9.47934" x2="6.99381" y2="30.9532" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#1F22A0"/>
+                    <stop offset="1" stop-color="#C2CFFF"/>
+                  </linearGradient>
+                </defs>
+              </svg>
             </div>
-            <span class="sidebar__profile-name">사용자</span>
-          </button>
-          <button type="button" class="sidebar__profile-settings" id="settings-btn" aria-label="설정" title="설정">
-            <span class="sidebar__profile-settings-icon">⚙️</span>
+            <h1 class="sidebar__title">LAYV</h1>
+          </div>
+          <button type="button" class="sidebar__toggle" id="sidebar-toggle" title="사이드바 접기/펼치기" aria-label="사이드바 토글">
+            <span class="sidebar__toggle-icon material-symbols-outlined">keyboard_double_arrow_left</span>
           </button>
         </div>
 
-        <nav class="sidebar__apps-wrapper" aria-label="AI 아이콘">
+        <!-- 앱 폴더 토글 헤더 -->
+        <button type="button" class="sidebar__folder-toggle" id="apps-folder-toggle" aria-expanded="true">
+          <span class="sidebar__folder-arrow material-symbols-outlined">arrow_forward_ios</span>
+          <span class="sidebar__folder-icon material-symbols-outlined">folder</span>
+          <span class="sidebar__folder-name">Apps</span>
+        </button>
+        
+        <nav class="sidebar__apps-wrapper" id="apps-wrapper" aria-label="AI 아이콘">
+          <button class="sidebar__apps-settings" aria-label="설정">
+            <svg width="14" height="14" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
+              <path d="m1080.7 730.97-57.516-35.719c-70.641-43.828-70.641-146.63 0-190.45l57.562-35.719c29.344-18.188 38.344-56.766 20.156-86.062l-84.141-135.52c-18.188-29.344-56.766-38.344-86.062-20.156l-17.156 10.641c-74.672 46.359-171.19-7.3594-171.19-95.25v-20.203c0-34.547-27.984-62.531-62.531-62.531h-159.52c-34.547 0-62.531 27.984-62.531 62.531v20.203c0 87.891-96.562 141.61-171.19 95.25l-17.156-10.641c-29.344-18.188-67.875-9.1875-86.062 20.156l-84.141 135.52c-18.188 29.344-9.1875 67.875 20.156 86.062l57.516 35.719c70.641 43.828 70.641 146.63 0 190.45l-57.516 35.719c-29.344 18.188-38.344 56.766-20.156 86.062l84.141 135.52c18.188 29.344 56.766 38.344 86.062 20.156l17.156-10.641c74.672-46.359 171.19 7.3594 171.19 95.25v20.203c0 34.547 27.984 62.531 62.531 62.531h159.52c34.547 0 62.531-27.984 62.531-62.531v-20.203c0-87.891 96.516-141.61 171.19-95.25l17.156 10.641c29.344 18.188 67.875 9.1875 86.062-20.156l84.141-135.52c18.188-29.344 9.1875-67.875-20.156-86.062zm-480.71 64.312c-107.86 0-195.28-87.422-195.28-195.28 0-107.86 87.422-195.28 195.28-195.28s195.28 87.422 195.28 195.28c0 107.86-87.422 195.28-195.28 195.28z"/>
+            </svg>
+          </button>
           <div class="sidebar__apps" id="ai-app-list"></div>
         </nav>
 
-        <section class="sidebar__composer" aria-label="빠른 실행">
-          <h2 class="sidebar__composer-title">빠른 실행</h2>
-          <p class="sidebar__composer-hint">명령어로 AI를 빠르게 실행하세요. 예: /c (ChatGPT)</p>
-          <input
-            type="text"
-            id="quick-command"
-            class="sidebar__composer-input"
-            placeholder="/c, /cl, /g, /pi..."
-          />
-          <span class="sidebar__composer-feedback" id="composer-feedback" role="status" aria-live="polite"></span>
-        </section>
+        <!-- Community 폴더 -->
+        <button type="button" class="sidebar__folder-toggle sidebar__folder-toggle--collapsed" id="community-folder-toggle" aria-expanded="false">
+          <span class="sidebar__folder-arrow material-symbols-outlined">arrow_forward_ios</span>
+          <span class="sidebar__folder-icon material-symbols-outlined">box</span>
+          <span class="sidebar__folder-name">Community</span>
+        </button>
         
-        <section class="sidebar__broadcast" aria-label="일괄 프롬프트">
-          <h2 class="sidebar__broadcast-title">일괄 프롬프트 전송</h2>
-          <p class="sidebar__broadcast-hint">ON된 모든 AI 창에 동시에 프롬프트를 전송합니다</p>
-          <textarea
-            id="broadcast-prompt"
-            class="sidebar__broadcast-input"
-            placeholder="여기에 프롬프트를 입력하세요..."
-            rows="3"
-          ></textarea>
-          <div class="sidebar__broadcast-actions">
-            <button type="button" id="broadcast-btn" class="sidebar__broadcast-btn">
-              <span class="sidebar__broadcast-btn-icon">📤</span>
-              <span class="sidebar__broadcast-btn-text">전송</span>
-            </button>
-            <span class="sidebar__broadcast-status" id="broadcast-status"></span>
+        <nav class="sidebar__apps-wrapper sidebar__apps-wrapper--collapsed sidebar__apps-wrapper--empty" id="community-wrapper" aria-label="커뮤니티">
+          <button class="sidebar__apps-settings" aria-label="설정">
+            <svg width="14" height="14" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
+              <path d="m1080.7 730.97-57.516-35.719c-70.641-43.828-70.641-146.63 0-190.45l57.562-35.719c29.344-18.188 38.344-56.766 20.156-86.062l-84.141-135.52c-18.188-29.344-56.766-38.344-86.062-20.156l-17.156 10.641c-74.672 46.359-171.19-7.3594-171.19-95.25v-20.203c0-34.547-27.984-62.531-62.531-62.531h-159.52c-34.547 0-62.531 27.984-62.531 62.531v20.203c0 87.891-96.562 141.61-171.19 95.25l-17.156-10.641c-29.344-18.188-67.875-9.1875-86.062 20.156l-84.141 135.52c-18.188 29.344-9.1875 67.875 20.156 86.062l57.516 35.719c70.641 43.828 70.641 146.63 0 190.45l-57.516 35.719c-29.344 18.188-38.344 56.766-20.156 86.062l84.141 135.52c18.188 29.344 56.766 38.344 86.062 20.156l17.156-10.641c74.672-46.359 171.19 7.3594 171.19 95.25v20.203c0 34.547 27.984 62.531 62.531 62.531h159.52c34.547 0 62.531-27.984 62.531-62.531v-20.203c0-87.891 96.516-141.61 171.19-95.25l17.156 10.641c29.344 18.188 67.875 9.1875 86.062-20.156l84.141-135.52c18.188-29.344 9.1875-67.875-20.156-86.062zm-480.71 64.312c-107.86 0-195.28-87.422-195.28-195.28 0-107.86 87.422-195.28 195.28-195.28s195.28 87.422 195.28 195.28c0 107.86-87.422 195.28-195.28 195.28z"/>
+            </svg>
+          </button>
+          <div class="sidebar__apps" id="community-list"></div>
+        </nav>
+
+        <!-- My Pack 폴더 -->
+        <button type="button" class="sidebar__folder-toggle sidebar__folder-toggle--collapsed" id="mypack-folder-toggle" aria-expanded="false">
+          <span class="sidebar__folder-arrow material-symbols-outlined">arrow_forward_ios</span>
+          <span class="sidebar__folder-icon material-symbols-outlined">box</span>
+          <span class="sidebar__folder-name">My Pack</span>
+        </button>
+        
+        <nav class="sidebar__apps-wrapper sidebar__apps-wrapper--collapsed sidebar__apps-wrapper--empty" id="mypack-wrapper" aria-label="마이 팩">
+          <button class="sidebar__apps-settings" aria-label="설정">
+            <svg width="14" height="14" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
+              <path d="m1080.7 730.97-57.516-35.719c-70.641-43.828-70.641-146.63 0-190.45l57.562-35.719c29.344-18.188 38.344-56.766 20.156-86.062l-84.141-135.52c-18.188-29.344-56.766-38.344-86.062-20.156l-17.156 10.641c-74.672 46.359-171.19-7.3594-171.19-95.25v-20.203c0-34.547-27.984-62.531-62.531-62.531h-159.52c-34.547 0-62.531 27.984-62.531 62.531v20.203c0 87.891-96.562 141.61-171.19 95.25l-17.156-10.641c-29.344-18.188-67.875-9.1875-86.062 20.156l-84.141 135.52c-18.188 29.344-9.1875 67.875 20.156 86.062l57.516 35.719c70.641 43.828 70.641 146.63 0 190.45l-57.516 35.719c-29.344 18.188-38.344 56.766-20.156 86.062l84.141 135.52c18.188 29.344 56.766 38.344 86.062 20.156l17.156-10.641c74.672-46.359 171.19 7.3594 171.19 95.25v20.203c0 34.547 27.984 62.531 62.531 62.531h159.52c34.547 0 62.531-27.984 62.531-62.531v-20.203c0-87.891 96.516-141.61 171.19-95.25l17.156 10.641c29.344 18.188 67.875 9.1875 86.062-20.156l84.141-135.52c18.188-29.344 9.1875-67.875-20.156-86.062zm-480.71 64.312c-107.86 0-195.28-87.422-195.28-195.28 0-107.86 87.422-195.28 195.28-195.28s195.28 87.422 195.28 195.28c0 107.86-87.422 195.28-195.28 195.28z"/>
+            </svg>
+          </button>
+          <div class="sidebar__apps" id="mypack-list"></div>
+        </nav>
+
+        <!-- 마이 페이지 버튼 -->
+        <button type="button" class="sidebar__mypage" id="mypage-button" aria-label="마이 페이지">
+          <div class="sidebar__mypage-avatar">
+            <span>U</span>
           </div>
-        </section>
+          <span class="sidebar__mypage-name">MyPage</span>
+          <span class="sidebar__mypage-arrow material-symbols-outlined">arrow_forward_ios</span>
+        </button>
       </aside>
 
       <main class="workspace" aria-live="polite">
@@ -65,19 +100,29 @@
             <button type="button" class="workspace__tabs-add" id="add-canvas-btn" title="새 캔버스 추가">+</button>
           </div>
           <div class="workspace__controls">
-            <label class="theme-toggle" for="theme-toggle" aria-label="테마 전환">
-              <input type="checkbox" id="theme-toggle" />
-              <span class="theme-toggle__track">
-                <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀️</span>
-                <span class="theme-toggle__thumb"></span>
-                <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">🌙</span>
-              </span>
-            </label>
-            <div class="workspace__status" id="workspace-status">0 / 6</div>
+            <button type="button" class="help-button" id="help-button" title="도움말" aria-label="도움말">
+              <span class="help-button__icon">?</span>
+            </button>
           </div>
         </header>
 
         <section class="workspace__canvas" id="workspace-canvas" tabindex="0"></section>
+        
+        <!-- 통합 플로팅 컨트롤 -->
+        <div class="floating-control" id="floating-control">
+          <div class="floating-control__wrapper">
+            <textarea
+              id="unified-input"
+              class="floating-control__textarea"
+              placeholder="/c (빠른 실행) 또는 프롬프트 입력 (일괄 전송)..."
+              rows="1"
+            ></textarea>
+            <button type="button" id="send-btn" class="floating-control__send-btn">
+              <span class="floating-control__send-icon">📤</span>
+              <span class="floating-control__send-text">Send</span>
+            </button>
+          </div>
+        </div>
       </main>
     </div>
 
@@ -109,6 +154,84 @@
       </article>
     </template>
 
+    <!-- 커스텀 앱 추가 팝업 -->
+    <div class="custom-app-modal" id="custom-app-modal" style="display: none;">
+      <div class="custom-app-modal__overlay"></div>
+      <div class="custom-app-modal__content">
+        <div class="custom-app-modal__header">
+          <h2 class="custom-app-modal__title">커스텀 앱 추가</h2>
+          <button class="custom-app-modal__close" id="modal-close-btn" aria-label="닫기">×</button>
+        </div>
+        <form class="custom-app-modal__form" id="custom-app-form">
+          <div class="custom-app-modal__field">
+            <label for="app-name">앱 이름</label>
+            <input type="text" id="app-name" name="name" placeholder="예: YouTube" required>
+          </div>
+          <div class="custom-app-modal__field">
+            <label for="app-url">URL</label>
+            <input type="url" id="app-url" name="url" placeholder="https://example.com" required>
+          </div>
+          <div class="custom-app-modal__field">
+            <label>아이콘</label>
+            <div class="custom-app-modal__icon-options">
+              <div class="custom-app-modal__icon-option">
+                <input type="radio" id="icon-text" name="icon-type" value="text" checked>
+                <label for="icon-text">
+                  <span>텍스트 (2글자)</span>
+                  <input type="text" id="app-icon-text" name="icon-text" placeholder="YT" maxlength="2" pattern="[A-Za-z0-9]{1,2}">
+                </label>
+              </div>
+              <div class="custom-app-modal__icon-option">
+                <input type="radio" id="icon-image" name="icon-type" value="image">
+                <label for="icon-image">
+                  <span>이미지 파일</span>
+                  <input type="file" id="app-icon-image" name="icon-image" accept="image/*">
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="custom-app-modal__actions">
+            <button type="button" class="custom-app-modal__cancel" id="modal-cancel-btn">취소</button>
+            <button type="submit" class="custom-app-modal__submit">추가</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 프로필 설정 팝업 -->
+    <div class="profile-modal" id="profile-modal" style="display: none;">
+      <div class="profile-modal__overlay"></div>
+      <div class="profile-modal__content">
+        <div class="profile-modal__header">
+          <h2 class="profile-modal__title">프로필 설정</h2>
+          <button class="profile-modal__close" id="profile-modal-close-btn" aria-label="닫기">×</button>
+        </div>
+        <form class="profile-modal__form" id="profile-form">
+          <div class="profile-modal__avatar-section">
+            <div class="profile-modal__avatar-preview" id="profile-avatar-preview">
+              U
+            </div>
+            <div class="profile-modal__avatar-actions">
+              <label for="profile-avatar-upload" class="profile-modal__upload-btn">
+                이미지 업로드
+                <input type="file" id="profile-avatar-upload" accept="image/*" style="display: none;">
+              </label>
+              <button type="button" class="profile-modal__remove-btn" id="profile-avatar-remove">제거</button>
+            </div>
+          </div>
+          <div class="profile-modal__field">
+            <label for="profile-name">이름</label>
+            <input type="text" id="profile-name" name="name" placeholder="사용자 이름" required maxlength="20">
+          </div>
+          <div class="profile-modal__actions">
+            <button type="button" class="profile-modal__cancel" id="profile-modal-cancel-btn">취소</button>
+            <button type="submit" class="profile-modal__submit">저장</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <script type="module" src="./src/js/app.js"></script>
+    <script type="module" src="./src/js/realglass-init.js"></script>
   </body>
 </html>

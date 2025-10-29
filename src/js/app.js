@@ -180,15 +180,10 @@ const state = {
 
 const sidebarList = document.getElementById('ai-app-list');
 const workspaceCanvas = document.getElementById('workspace-canvas');
-const workspaceStatus = document.getElementById('workspace-status');
 const windowTemplate = document.getElementById('window-template');
-const quickCommand = document.getElementById('quick-command');
-const composerFeedback = document.getElementById('composer-feedback');
 const canvasTabsList = document.getElementById('canvas-tabs');
 const addCanvasBtn = document.getElementById('add-canvas-btn');
-
-const FEEDBACK_DURATION = 2400;
-let feedbackTimeoutId;
+const helpButton = document.getElementById('help-button');
 
 const CANVAS_STORAGE_KEY = 'aispace-canvases';
 
@@ -244,47 +239,53 @@ const commandMap = {
   '/voice': 'voiceflow',
 };
 
-const themeToggleInput = document.getElementById('theme-toggle');
-
-const THEME_STORAGE_KEY = 'aispace-theme';
-const THEME_OPTIONS = {
-  light: 'light',
-  dark: 'dark',
-};
-
-function applyThemePreference(theme) {
+// 기본 라이트 모드 적용
+function initAutoTheme() {
   const root = document.documentElement;
-  if (!Object.values(THEME_OPTIONS).includes(theme)) {
-    root.removeAttribute('data-theme');
-    return;
-  }
-  root.setAttribute('data-theme', theme === THEME_OPTIONS.dark ? 'dark' : 'light');
-  if (themeToggleInput) {
-    themeToggleInput.checked = theme === THEME_OPTIONS.dark;
+  root.setAttribute('data-theme', 'light');
+}
+
+// 도움말 버튼
+function initHelpButton() {
+  if (!helpButton) return;
+  
+  helpButton.addEventListener('click', () => {
+    showToast('💡 도움말: /명령어로 빠른 실행, 일반 텍스트는 일괄 전송됩니다.');
+  });
+}
+
+// 사이드바 토글 관리
+const SIDEBAR_STORAGE_KEY = 'aispace-sidebar-collapsed';
+const sidebarToggleBtn = document.getElementById('sidebar-toggle');
+const sidebar = document.querySelector('.sidebar');
+const appShell = document.querySelector('.app-shell');
+
+function applySidebarState(isCollapsed) {
+  if (isCollapsed) {
+    sidebar.classList.add('sidebar--collapsed');
+    appShell.classList.add('sidebar-collapsed');
+  } else {
+    sidebar.classList.remove('sidebar--collapsed');
+    appShell.classList.remove('sidebar-collapsed');
   }
 }
 
-function loadInitialTheme() {
-  const stored = localStorage.getItem(THEME_STORAGE_KEY);
-  if (stored) {
-    applyThemePreference(stored);
-    return stored;
-  }
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const initialTheme = prefersDark ? THEME_OPTIONS.dark : THEME_OPTIONS.light;
-  applyThemePreference(initialTheme);
-  return initialTheme;
+function loadSidebarState() {
+  const stored = localStorage.getItem(SIDEBAR_STORAGE_KEY);
+  return stored === 'true';
 }
 
-function initThemeToggle() {
-  const currentTheme = loadInitialTheme();
-  if (!themeToggleInput) return;
-  themeToggleInput.checked = currentTheme === THEME_OPTIONS.dark;
-  themeToggleInput.addEventListener('change', (event) => {
-    const shouldEnableDark = event.target.checked;
-    const nextTheme = shouldEnableDark ? THEME_OPTIONS.dark : THEME_OPTIONS.light;
-    applyThemePreference(nextTheme);
-    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+function initSidebarToggle() {
+  const isCollapsed = loadSidebarState();
+  applySidebarState(isCollapsed);
+  
+  if (!sidebarToggleBtn) return;
+  
+  sidebarToggleBtn.addEventListener('click', () => {
+    const currentlyCollapsed = sidebar.classList.contains('sidebar--collapsed');
+    const newState = !currentlyCollapsed;
+    applySidebarState(newState);
+    localStorage.setItem(SIDEBAR_STORAGE_KEY, newState.toString());
   });
 }
 
@@ -336,6 +337,53 @@ function renderSidebar() {
   });
 
   sidebarList.appendChild(fragment);
+}
+
+// 앱 폴더 토글 기능
+function initAppsFolderToggle() {
+  const folders = [
+    { toggleId: 'apps-folder-toggle', wrapperId: 'apps-wrapper' },
+    { toggleId: 'community-folder-toggle', wrapperId: 'community-wrapper' },
+    { toggleId: 'mypack-folder-toggle', wrapperId: 'mypack-wrapper' }
+  ];
+  
+  folders.forEach(({ toggleId, wrapperId }) => {
+    const folderToggle = document.getElementById(toggleId);
+    const appsWrapper = document.getElementById(wrapperId);
+    
+    if (!folderToggle || !appsWrapper) return;
+    
+    // 폴더가 비어있는지 확인
+    const checkIfEmpty = () => {
+      const appsList = appsWrapper.querySelector('.sidebar__apps');
+      const isEmpty = !appsList || appsList.children.length === 0;
+      
+      if (isEmpty) {
+        appsWrapper.classList.add('sidebar__apps-wrapper--empty');
+      } else {
+        appsWrapper.classList.remove('sidebar__apps-wrapper--empty');
+      }
+      
+      return isEmpty;
+    };
+    
+    // 초기 체크
+    checkIfEmpty();
+    
+    folderToggle.addEventListener('click', () => {
+      const isEmpty = checkIfEmpty();
+      const isExpanded = folderToggle.getAttribute('aria-expanded') === 'true';
+      
+      // 화살표는 항상 토글
+      folderToggle.setAttribute('aria-expanded', !isExpanded);
+      folderToggle.classList.toggle('sidebar__folder-toggle--collapsed', isExpanded);
+      
+      // 비어있지 않은 경우만 박스 토글
+      if (!isEmpty) {
+        appsWrapper.classList.toggle('sidebar__apps-wrapper--collapsed', isExpanded);
+      }
+    });
+  });
 }
 
 // ============ Canvas Management ============
@@ -391,7 +439,6 @@ function switchCanvas(canvasId) {
   // UI 업데이트
   renderWorkspaceWindows();
   renderCanvasTabs();
-  updateWorkspaceStatus();
   saveCanvasesToStorage();
 }
 
@@ -435,11 +482,16 @@ function renderWorkspaceWindows() {
   const activeCanvas = getActiveCanvas();
   if (!activeCanvas) return;
   
-  // 현재 캔버스의 윈도우들 렌더링
-  activeCanvas.windows.forEach((windowData) => {
+  // 현재 캔버스의 윈도우들을 order 순서대로 정렬하여 렌더링
+  const sortedWindows = Array.from(activeCanvas.windows.values())
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+  
+  sortedWindows.forEach((windowData) => {
     const windowElement = createWindowElement(windowData);
     workspaceCanvas.appendChild(windowElement);
   });
+  
+  updateWorkspaceLayoutClass();
 }
 
 function checkAndDeleteEmptyCanvases() {
@@ -486,7 +538,12 @@ function loadCanvasesFromStorage() {
       const canvas = {
         id: canvasData.id,
         name: canvasData.name,
-        windows: new Map(canvasData.windows.map(w => [w.id, w])),
+        windows: new Map(canvasData.windows.map((w, index) => {
+          // appLookup에서 실제 app 객체를 찾아서 할당
+          const app = appLookup.get(w.appId) || w.app;
+          // order가 없으면 인덱스로 설정
+          return [w.id, { ...w, app, order: w.order !== undefined ? w.order : index }];
+        })),
       };
       state.canvases.set(canvas.id, canvas);
     });
@@ -511,13 +568,7 @@ function initCanvases() {
   }
   
   renderCanvasTabs();
-}
-
-function updateWorkspaceStatus() {
-  const activeCanvas = getActiveCanvas();
-  const windowCount = activeCanvas ? activeCanvas.windows.size : 0;
-  workspaceStatus.textContent = `${windowCount} / ${MAX_WINDOWS}`;
-  updateWorkspaceLayoutClass();
+  renderWorkspaceWindows(); // 저장된 창들을 화면에 렌더링
 }
 
 function updateWorkspaceLayoutClass() {
@@ -526,14 +577,14 @@ function updateWorkspaceLayoutClass() {
   const count = activeCanvas ? activeCanvas.windows.size : 0;
   
   workspaceCanvas.classList.remove(
-    'workspace__canvas--count-1',
-    'workspace__canvas--count-2',
-    'workspace__canvas--count-3',
-    'workspace__canvas--count-4'
+    'canvas-layout-1',
+    'canvas-layout-2',
+    'canvas-layout-3',
+    'canvas-layout-4'
   );
 
   if (count >= 1 && count <= 4) {
-    workspaceCanvas.classList.add(`workspace__canvas--count-${count}`);
+    workspaceCanvas.classList.add(`canvas-layout-${count}`);
   }
 }
 
@@ -569,6 +620,92 @@ function handleDragLeave() {
   setWorkspaceDroppable(false);
 }
 
+// ==================== 캔버스 창 드래그 앤 드롭 ====================
+let draggedWindowId = null;
+
+function handleWindowDragStart(event) {
+  const windowNode = event.target.closest('.ai-window');
+  if (!windowNode) return;
+  
+  draggedWindowId = windowNode.dataset.windowId;
+  windowNode.classList.add('ai-window--dragging');
+  
+  event.dataTransfer.effectAllowed = 'move';
+  event.dataTransfer.setData('text/plain', draggedWindowId);
+}
+
+function handleWindowDragEnd(event) {
+  const windowNode = event.target.closest('.ai-window');
+  if (windowNode) {
+    windowNode.classList.remove('ai-window--dragging');
+  }
+  
+  // 모든 하이라이트 제거
+  document.querySelectorAll('.ai-window--drag-over').forEach(node => {
+    node.classList.remove('ai-window--drag-over');
+  });
+  
+  draggedWindowId = null;
+}
+
+function handleWindowDragOver(event) {
+  if (!draggedWindowId) return;
+  
+  // 항상 preventDefault를 먼저 호출하여 금지 표시 방지
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'move';
+  
+  const targetWindow = event.currentTarget;
+  const targetWindowId = targetWindow.dataset.windowId;
+  
+  // 자기 자신 위로는 하이라이트만 안 함
+  if (targetWindowId === draggedWindowId) return;
+  
+  targetWindow.classList.add('ai-window--drag-over');
+}
+
+function handleWindowDragLeave(event) {
+  const targetWindow = event.currentTarget;
+  targetWindow.classList.remove('ai-window--drag-over');
+}
+
+function handleWindowDrop(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  
+  const targetWindow = event.currentTarget;
+  const targetWindowId = targetWindow.dataset.windowId;
+  
+  targetWindow.classList.remove('ai-window--drag-over');
+  
+  if (!draggedWindowId || targetWindowId === draggedWindowId) return;
+  
+  swapWindowOrder(draggedWindowId, targetWindowId);
+}
+
+function swapWindowOrder(windowId1, windowId2) {
+  const activeCanvas = getActiveCanvas();
+  if (!activeCanvas) return;
+  
+  const window1 = activeCanvas.windows.get(windowId1);
+  const window2 = activeCanvas.windows.get(windowId2);
+  
+  if (!window1 || !window2) return;
+  
+  // order 값 교환
+  const tempOrder = window1.order;
+  window1.order = window2.order;
+  window2.order = tempOrder;
+  
+  // 화면 다시 렌더링
+  renderWorkspaceWindows();
+  
+  // localStorage에 저장
+  saveCanvasesToStorage();
+  
+  showToast('창 순서가 변경되었습니다.');
+}
+
 function createWindowId(appId) {
   const base = `${appId}-${Date.now()}`;
   return base;
@@ -588,6 +725,7 @@ function createWindowElement(windowData) {
   const refreshButton = windowNode.querySelector('[data-action="refresh"]');
   const toggleCheckbox = windowNode.querySelector('[data-action="toggle-prompt"]');
   const resizeHandle = windowNode.querySelector('[data-resize-handle]');
+  const headerEl = windowNode.querySelector('.ai-window__header');
 
   titleEl.textContent = app.name;
   iconEl.textContent = app.icon;
@@ -611,6 +749,18 @@ function createWindowElement(windowData) {
     });
   }
 
+  // 드래그 앤 드롭 이벤트 (헤더만 드래그 가능)
+  if (headerEl) {
+    headerEl.draggable = true;
+    headerEl.addEventListener('dragstart', handleWindowDragStart);
+    headerEl.addEventListener('dragend', handleWindowDragEnd);
+  }
+  
+  // 창 전체에 드롭 이벤트 추가
+  windowNode.addEventListener('dragover', handleWindowDragOver);
+  windowNode.addEventListener('dragleave', handleWindowDragLeave);
+  windowNode.addEventListener('drop', handleWindowDrop);
+
   // Custom resize handle for pointer events on top of CSS resize
   initResizeHandle(windowNode, resizeHandle);
 
@@ -627,11 +777,15 @@ function addWindow(app) {
   }
 
   const windowId = createWindowId(app.id);
+  // 현재 캔버스의 최대 order 값 찾기
+  const maxOrder = Math.max(0, ...Array.from(activeCanvas.windows.values()).map(w => w.order || 0));
+  
   const windowData = {
     id: windowId,
     appId: app.id,
     app,
     promptEnabled: true, // 기본적으로 ON 상태
+    order: maxOrder + 1, // 새 창은 마지막 순서
   };
 
   activeCanvas.windows.set(windowId, windowData);
@@ -639,7 +793,7 @@ function addWindow(app) {
   const windowElement = createWindowElement(windowData);
   workspaceCanvas.appendChild(windowElement);
 
-  updateWorkspaceStatus();
+  updateWorkspaceLayoutClass();
   saveCanvasesToStorage();
 }
 
@@ -657,7 +811,7 @@ function removeWindow(windowId) {
   }
   
   activeCanvas.windows.delete(windowId);
-  updateWorkspaceStatus();
+  updateWorkspaceLayoutClass();
   saveCanvasesToStorage();
   
   // 빈 캔버스 자동 삭제
@@ -747,14 +901,7 @@ function showToast(message) {
   }, 2800);
 }
 
-function showComposerFeedback(message) {
-  if (!composerFeedback) return;
-  clearTimeout(feedbackTimeoutId);
-  composerFeedback.textContent = message;
-  feedbackTimeoutId = setTimeout(() => {
-    composerFeedback.textContent = '';
-  }, FEEDBACK_DURATION);
-}
+// showComposerFeedback 함수 제거됨 - 토스트만 사용
 
 function executeQuickCommand(commandText) {
   if (!commandText) return;
@@ -766,37 +913,32 @@ function executeQuickCommand(commandText) {
   const appId = commandMap[normalizedCommand];
   
   if (!appId) {
-    showComposerFeedback(`"${commandText}" 명령어를 찾을 수 없어요. 예: /c, /cl, /g`);
+    showToast(`"${commandText}" 명령어를 찾을 수 없습니다. 예: /c, /cl, /g`);
     return;
   }
   
   const app = appLookup.get(appId);
   if (!app) {
-    showComposerFeedback(`AI 앱을 찾을 수 없어요.`);
+    showToast(`AI 앱을 찾을 수 없습니다.`);
     return;
   }
   
   // 이미 같은 AI가 열려있는지 확인 (현재 캔버스에서)
   const existingWindow = Array.from(activeCanvas.windows.values()).find(w => w.appId === appId);
   if (existingWindow) {
-    showComposerFeedback(`${app.name}은(는) 이미 열려 있어요.`);
+    showToast(`${app.name}은(는) 이미 열려 있습니다.`);
     return;
   }
   
   // 최대 창 개수 확인
   if (activeCanvas.windows.size >= MAX_WINDOWS) {
-    showComposerFeedback(`최대 ${MAX_WINDOWS}개까지만 열 수 있어요.`);
+    showToast(`최대 ${MAX_WINDOWS}개까지만 열 수 있습니다.`);
     return;
   }
   
   // AI 창 열기
   addWindow(app);
-  showComposerFeedback(`${app.name} 실행 완료!`);
-  
-  // 입력 필드 초기화
-  if (quickCommand) {
-    quickCommand.value = '';
-  }
+  showToast(`✅ ${app.name} 실행 완료!`);
 }
 
 function initToastStyles() {
@@ -978,12 +1120,6 @@ async function broadcastPromptToWindows(promptText) {
     return;
   }
   
-  // 상태 메시지 표시
-  const statusEl = document.getElementById('broadcast-status');
-  if (statusEl) {
-    statusEl.textContent = `전송 중... (0/${enabledWindows.length})`;
-  }
-  
   let successCount = 0;
   let failedApps = [];
   
@@ -1012,42 +1148,29 @@ async function broadcastPromptToWindows(promptText) {
         failedApps.push(windowData.app.name);
       }
       
-      // 진행 상황 업데이트
-      if (statusEl) {
-        statusEl.textContent = `전송 중... (${i + 1}/${enabledWindows.length})`;
-      }
-      
       // 다음 창으로 넘어가기 전 짧은 지연 (과부하 방지)
       await new Promise(resolve => setTimeout(resolve, 100));
     }
   }
   
-  // 결과 메시지
-  if (statusEl) {
-    if (successCount === enabledWindows.length) {
-      statusEl.textContent = `✅ ${successCount}개 창에 전송 완료`;
-      showToast(`${successCount}개의 AI 창에 프롬프트를 전송했습니다.`);
-    } else if (successCount > 0) {
-      statusEl.textContent = `⚠️ ${successCount}/${enabledWindows.length}개 전송 완료`;
-      showToast(`${successCount}개 성공, ${failedApps.length}개 실패: ${failedApps.join(', ')}`);
-    } else {
-      statusEl.textContent = `❌ 전송 실패`;
-      showToast('프롬프트 전송에 실패했습니다. 페이지가 완전히 로드되었는지 확인하세요.');
-    }
-    
-    // 3초 후 상태 메시지 클리어
-    setTimeout(() => {
-      if (statusEl) statusEl.textContent = '';
-    }, 3000);
+  // 결과 메시지 (토스트로만 표시)
+  if (successCount === enabledWindows.length) {
+    showToast(`✅ ${successCount}개의 AI 창에 프롬프트를 전송했습니다.`);
+  } else if (successCount > 0) {
+    showToast(`⚠️ ${successCount}개 성공, ${failedApps.length}개 실패: ${failedApps.join(', ')}`);
+  } else {
+    showToast('❌ 프롬프트 전송에 실패했습니다. 페이지가 완전히 로드되었는지 확인하세요.');
   }
 }
 
 function initWorkspace() {
-  initThemeToggle();
+  initAutoTheme();
+  initSidebarToggle();
+  initHelpButton();
   buildLookups();
   renderSidebar();
+  initAppsFolderToggle();
   initCanvases();
-  updateWorkspaceStatus();
   initToastStyles();
   initScrollIndicator();
 
@@ -1076,12 +1199,65 @@ function initWorkspace() {
   workspaceCanvas.addEventListener('dragleave', handleDragLeave);
   workspaceCanvas.addEventListener('drop', handleDrop);
 
-  quickCommand?.addEventListener('keydown', (event) => {
+  // 통합 입력창 이벤트 리스너
+  const unifiedInput = document.getElementById('unified-input');
+  const sendBtn = document.getElementById('send-btn');
+
+  // 자동 높이 조정 함수
+  function autoResizeTextarea() {
+    unifiedInput.style.height = 'auto';
+    unifiedInput.style.height = Math.min(unifiedInput.scrollHeight, 180) + 'px';
+  }
+
+  // 버튼 활성화/비활성화 함수
+  function updateSendButtonState() {
+    const hasText = unifiedInput?.value.trim().length > 0;
+    if (sendBtn) {
+      sendBtn.disabled = !hasText;
+    }
+  }
+
+  // 초기 상태 설정 (비활성화)
+  updateSendButtonState();
+
+  // 입력 시 높이 자동 조정 및 버튼 상태 업데이트
+  unifiedInput?.addEventListener('input', () => {
+    autoResizeTextarea();
+    updateSendButtonState();
+  });
+
+  // 통합 실행 함수
+  function executeUnifiedCommand() {
+    const input = unifiedInput?.value.trim();
+    if (!input) return;
+
+    // 슬래시로 시작하면 빠른 실행
+    if (input.startsWith('/')) {
+      executeQuickCommand(input);
+    } else {
+      // 일반 텍스트면 일괄 전송
+      broadcastPromptToWindows(input);
+    }
+
+    // 입력창 초기화
+    unifiedInput.value = '';
+    autoResizeTextarea();
+    updateSendButtonState();
+  }
+
+  // Send 버튼 클릭
+  sendBtn?.addEventListener('click', executeUnifiedCommand);
+
+  // Enter 키 처리
+  unifiedInput?.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
-      event.preventDefault();
-      const command = quickCommand.value.trim();
-      if (command) {
-        executeQuickCommand(command);
+      if (event.ctrlKey) {
+        // Ctrl+Enter: 줄바꿈 (기본 동작)
+        return;
+      } else {
+        // Enter: Send 실행
+        event.preventDefault();
+        executeUnifiedCommand();
       }
     }
   });
@@ -1119,28 +1295,6 @@ function initWorkspace() {
     const newCanvas = createCanvas();
     if (newCanvas) {
       switchCanvas(newCanvas.id);
-    }
-  });
-
-  // Broadcast prompt event listeners
-  const broadcastBtn = document.getElementById('broadcast-btn');
-  const broadcastPrompt = document.getElementById('broadcast-prompt');
-  
-  broadcastBtn?.addEventListener('click', () => {
-    const promptText = broadcastPrompt?.value.trim();
-    if (promptText) {
-      broadcastPromptToWindows(promptText);
-    }
-  });
-  
-  // Ctrl+Enter로도 전송 가능
-  broadcastPrompt?.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' && event.ctrlKey) {
-      event.preventDefault();
-      const promptText = broadcastPrompt.value.trim();
-      if (promptText) {
-        broadcastPromptToWindows(promptText);
-      }
     }
   });
 
@@ -1317,5 +1471,404 @@ function unmountAppContent(container, _app) {
   }
 }
 
-window.addEventListener('DOMContentLoaded', initWorkspace);
+// ==================== 커스텀 앱 관리 ====================
+const CUSTOM_APPS_STORAGE_KEY = 'aispace_custom_apps';
+let customApps = [];
+
+function loadCustomApps() {
+  try {
+    const stored = localStorage.getItem(CUSTOM_APPS_STORAGE_KEY);
+    customApps = stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.warn('커스텀 앱 불러오기 실패:', error);
+    customApps = [];
+  }
+}
+
+function saveCustomApps() {
+  try {
+    localStorage.setItem(CUSTOM_APPS_STORAGE_KEY, JSON.stringify(customApps));
+  } catch (error) {
+    console.warn('커스텀 앱 저장 실패:', error);
+  }
+}
+
+function createAddButton() {
+  const button = document.createElement('button');
+  button.className = 'sidebar__app sidebar__app--add';
+  button.type = 'button';
+  button.setAttribute('aria-label', '커스텀 앱 추가');
+  button.dataset.addButton = 'true';
+
+  const iconHolder = document.createElement('div');
+  iconHolder.className = 'sidebar__app-icon';
+  iconHolder.textContent = '+';
+
+  button.appendChild(iconHolder);
+  
+  button.addEventListener('click', openCustomAppModal);
+  
+  return button;
+}
+
+function renderCustomApps() {
+  const appsList = document.getElementById('ai-app-list');
+  if (!appsList) return;
+  
+  // 기존 커스텀 앱들 제거
+  const existingCustomApps = appsList.querySelectorAll('[data-custom-app]');
+  existingCustomApps.forEach(app => app.remove());
+  
+  // + 버튼 제거 (나중에 다시 추가)
+  const addButton = appsList.querySelector('[data-add-button]');
+  if (addButton) addButton.remove();
+  
+  // + 버튼 먼저 추가
+  appsList.insertBefore(createAddButton(), appsList.firstChild);
+  
+  // 커스텀 앱들 추가
+  customApps.forEach((app) => {
+    const item = createCustomAppElement(app);
+    appsList.insertBefore(item, appsList.children[1]); // + 버튼 다음에 추가
+  });
+}
+
+function createCustomAppElement(app) {
+  const item = document.createElement('button');
+  item.className = 'sidebar__app';
+  item.type = 'button';
+  item.draggable = true;
+  item.setAttribute('data-app-id', app.id);
+  item.setAttribute('data-custom-app', 'true');
+  item.setAttribute('aria-label', `${app.name} 창 열기`);
+
+  const iconHolder = document.createElement('div');
+  iconHolder.className = 'sidebar__app-icon';
+  
+  if (app.iconType === 'image' && app.iconData) {
+    const img = document.createElement('img');
+    img.src = app.iconData;
+    img.alt = app.name;
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'cover';
+    iconHolder.appendChild(img);
+  } else {
+    iconHolder.textContent = app.icon || app.name.substring(0, 2).toUpperCase();
+  }
+
+  const name = document.createElement('span');
+  name.className = 'sidebar__app-name';
+  name.textContent = app.name;
+
+  // 삭제 버튼 추가 (우클릭 메뉴 대신 길게 누르기로 표시)
+  item.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    if (confirm(`"${app.name}" 앱을 삭제하시겠습니까?`)) {
+      deleteCustomApp(app.id);
+    }
+  });
+
+  item.append(iconHolder, name);
+  return item;
+}
+
+function deleteCustomApp(appId) {
+  customApps = customApps.filter(app => app.id !== appId);
+  saveCustomApps();
+  renderCustomApps();
+  showToast('커스텀 앱이 삭제되었습니다.');
+}
+
+function openCustomAppModal() {
+  const modal = document.getElementById('custom-app-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    // 폼 초기화
+    document.getElementById('custom-app-form').reset();
+  }
+}
+
+function closeCustomAppModal() {
+  const modal = document.getElementById('custom-app-modal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+function initCustomAppModal() {
+  const modal = document.getElementById('custom-app-modal');
+  const closeBtn = document.getElementById('modal-close-btn');
+  const cancelBtn = document.getElementById('modal-cancel-btn');
+  const form = document.getElementById('custom-app-form');
+  const overlay = modal?.querySelector('.custom-app-modal__overlay');
+  
+  // 닫기 버튼들
+  closeBtn?.addEventListener('click', closeCustomAppModal);
+  cancelBtn?.addEventListener('click', closeCustomAppModal);
+  overlay?.addEventListener('click', closeCustomAppModal);
+  
+  // 아이콘 타입 변경 시 입력 필드 활성화/비활성화
+  const iconTextRadio = document.getElementById('icon-text');
+  const iconImageRadio = document.getElementById('icon-image');
+  const iconTextInput = document.getElementById('app-icon-text');
+  const iconImageInput = document.getElementById('app-icon-image');
+  
+  iconTextRadio?.addEventListener('change', () => {
+    if (iconTextInput) iconTextInput.disabled = false;
+    if (iconImageInput) iconImageInput.disabled = true;
+  });
+  
+  iconImageRadio?.addEventListener('change', () => {
+    if (iconTextInput) iconTextInput.disabled = true;
+    if (iconImageInput) iconImageInput.disabled = false;
+  });
+  
+  // 초기 상태 설정
+  if (iconTextInput) iconTextInput.disabled = false;
+  if (iconImageInput) iconImageInput.disabled = true;
+  
+  // 폼 제출
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(form);
+    const name = formData.get('name');
+    const url = formData.get('url');
+    const iconType = formData.get('icon-type');
+    
+    let iconData = null;
+    let icon = '';
+    
+    if (iconType === 'text') {
+      icon = formData.get('icon-text') || name.substring(0, 2).toUpperCase();
+    } else if (iconType === 'image') {
+      const fileInput = document.getElementById('app-icon-image');
+      const file = fileInput.files[0];
+      if (file) {
+        // 이미지를 base64로 변환
+        iconData = await fileToBase64(file);
+      } else {
+        // 이미지 파일이 없으면 텍스트로 fallback
+        icon = name.substring(0, 2).toUpperCase();
+      }
+    }
+    
+    const newApp = {
+      id: `custom-${Date.now()}`,
+      name,
+      url,
+      icon,
+      iconType,
+      iconData,
+      categoryId: 'custom'
+    };
+    
+    customApps.push(newApp);
+    appLookup.set(newApp.id, newApp);
+    saveCustomApps();
+    renderCustomApps();
+    closeCustomAppModal();
+    showToast(`"${name}" 앱이 추가되었습니다.`);
+  });
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ==================== 프로필 관리 ====================
+const PROFILE_STORAGE_KEY = 'aispace_user_profile';
+let userProfile = {
+  name: 'User',
+  avatar: null // base64 이미지 또는 null
+};
+
+function loadProfile() {
+  try {
+    const stored = localStorage.getItem(PROFILE_STORAGE_KEY);
+    if (stored) {
+      userProfile = JSON.parse(stored);
+    }
+  } catch (error) {
+    console.warn('프로필 불러오기 실패:', error);
+  }
+}
+
+function saveProfile() {
+  try {
+    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(userProfile));
+  } catch (error) {
+    console.warn('프로필 저장 실패:', error);
+  }
+}
+
+function updateMyPageButton() {
+  const myPageButton = document.getElementById('mypage-button');
+  if (!myPageButton) return;
+  
+  const avatar = myPageButton.querySelector('.sidebar__mypage-avatar');
+  const nameEl = myPageButton.querySelector('.sidebar__mypage-name');
+  
+  if (avatar) {
+    // 기존 내용 제거
+    avatar.innerHTML = '';
+    
+    if (userProfile.avatar) {
+      // 이미지가 있으면 img 태그로 표시
+      const img = document.createElement('img');
+      img.src = userProfile.avatar;
+      img.alt = userProfile.name;
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      avatar.appendChild(img);
+    } else {
+      // 이미지가 없으면 첫 글자로 표시
+      avatar.textContent = userProfile.name.charAt(0).toUpperCase();
+    }
+  }
+  
+  if (nameEl) {
+    nameEl.textContent = userProfile.name;
+  }
+}
+
+function openProfileModal() {
+  const modal = document.getElementById('profile-modal');
+  if (!modal) return;
+  
+  // 현재 프로필 정보를 폼에 반영
+  const nameInput = document.getElementById('profile-name');
+  const avatarPreview = document.getElementById('profile-avatar-preview');
+  
+  if (nameInput) {
+    nameInput.value = userProfile.name;
+  }
+  
+  if (avatarPreview) {
+    avatarPreview.innerHTML = '';
+    
+    if (userProfile.avatar) {
+      const img = document.createElement('img');
+      img.src = userProfile.avatar;
+      img.alt = userProfile.name;
+      avatarPreview.appendChild(img);
+    } else {
+      avatarPreview.textContent = userProfile.name.charAt(0).toUpperCase();
+    }
+  }
+  
+  modal.style.display = 'flex';
+}
+
+function closeProfileModal() {
+  const modal = document.getElementById('profile-modal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+function initProfileModal() {
+  const modal = document.getElementById('profile-modal');
+  const closeBtn = document.getElementById('profile-modal-close-btn');
+  const cancelBtn = document.getElementById('profile-modal-cancel-btn');
+  const form = document.getElementById('profile-form');
+  const overlay = modal?.querySelector('.profile-modal__overlay');
+  const avatarUpload = document.getElementById('profile-avatar-upload');
+  const avatarRemove = document.getElementById('profile-avatar-remove');
+  const avatarPreview = document.getElementById('profile-avatar-preview');
+  const myPageButton = document.getElementById('mypage-button');
+  
+  // 닫기 버튼들
+  closeBtn?.addEventListener('click', closeProfileModal);
+  cancelBtn?.addEventListener('click', closeProfileModal);
+  overlay?.addEventListener('click', closeProfileModal);
+  
+  // 마이페이지 버튼 클릭
+  myPageButton?.addEventListener('click', openProfileModal);
+  
+  // 아바타 업로드
+  avatarUpload?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    try {
+      const base64 = await fileToBase64(file);
+      
+      // 미리보기 업데이트
+      if (avatarPreview) {
+        avatarPreview.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = base64;
+        img.alt = 'Preview';
+        avatarPreview.appendChild(img);
+      }
+      
+      // 임시 저장 (실제 저장은 폼 제출 시)
+      userProfile.avatar = base64;
+    } catch (error) {
+      showToast('이미지 업로드 실패');
+      console.error(error);
+    }
+  });
+  
+  // 아바타 제거
+  avatarRemove?.addEventListener('click', () => {
+    userProfile.avatar = null;
+    
+    if (avatarPreview) {
+      avatarPreview.innerHTML = '';
+      const nameInput = document.getElementById('profile-name');
+      const name = nameInput ? nameInput.value : 'U';
+      avatarPreview.textContent = name.charAt(0).toUpperCase();
+    }
+  });
+  
+  // 폼 제출
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const nameInput = document.getElementById('profile-name');
+    const newName = nameInput?.value.trim();
+    
+    if (!newName) {
+      showToast('이름을 입력하세요.');
+      return;
+    }
+    
+    userProfile.name = newName;
+    saveProfile();
+    updateMyPageButton();
+    closeProfileModal();
+    showToast('프로필이 저장되었습니다.');
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  // 커스텀 앱을 먼저 불러와서 appLookup에 추가 (캔버스 복원 전에 필요)
+  loadCustomApps();
+  customApps.forEach(app => {
+    appLookup.set(app.id, app);
+  });
+  
+  // 프로필 불러오기
+  loadProfile();
+  
+  // 워크스페이스 초기화 (캔버스 복원 포함)
+  initWorkspace();
+  
+  // 커스텀 앱 UI 렌더링
+  renderCustomApps();
+  initCustomAppModal();
+  
+  // 프로필 모달 초기화 및 마이페이지 버튼 업데이트
+  initProfileModal();
+  updateMyPageButton();
+});
 

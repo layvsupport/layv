@@ -21,6 +21,17 @@ function createMainWindow() {
 
   mainWindow.loadFile(path.join(__dirname, '..', 'index.html'));
 
+  // 개발자 도구 자동 열기 (개발 중)
+  // mainWindow.webContents.openDevTools();
+
+  // F12 또는 Ctrl+Shift+I로 개발자 도구 토글
+  mainWindow.webContents.on('before-input-event', (event, input) => {
+    if (input.key === 'F12' || 
+        (input.control && input.shift && input.key.toLowerCase() === 'i')) {
+      mainWindow.webContents.toggleDevTools();
+    }
+  });
+
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
