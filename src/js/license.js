@@ -6,7 +6,7 @@ const LICENSE_STORAGE_KEY = 'aispace_license';
 const DEVICE_ID_KEY = 'aispace_device_id';
 
 // Vercel API 엔드포인트 URL (실제 배포 후 변경 필요)
-const LICENSE_API_URL = 'YOUR_VERCEL_API_URL'; // 예: https://your-project.vercel.app/api/verify-license
+const LICENSE_API_URL = 'https://vercel-beryl-iota.vercel.app/api/verify-license'; // 예: https://your-project.vercel.app/api/verify-license
 
 /**
  * 디바이스 ID 생성/가져오기

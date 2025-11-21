@@ -1910,6 +1910,8 @@ function initLicenseModal() {
     showLicenseMessage('인증 중...', 'info');
 
     try {
+      // 동적으로 import
+      const { verifyLicense, saveLicense } = await import('./license.js');
       const result = await verifyLicense(licenseKey);
 
       if (result.success) {

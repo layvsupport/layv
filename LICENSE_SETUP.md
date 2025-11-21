@@ -147,21 +147,56 @@ vercel --prod
 
 ## 3. 앱 설정
 
-### 3.1 라이선스 API URL 설정
+### 3.1 Vercel API 엔드포인트 URL 확인
 
-1. `src/js/license.js` 파일을 열기
-2. `LICENSE_API_URL` 상수를 찾아서 Vercel API 엔드포인트 URL로 변경:
+**Vercel에서 API URL 찾는 방법:**
 
-```javascript
-const LICENSE_API_URL = 'https://your-project.vercel.app/api/verify-license';
-```
+1. **Vercel Dashboard 접속**
+   - [vercel.com/dashboard](https://vercel.com/dashboard) 로그인
 
-예시:
-```javascript
-const LICENSE_API_URL = 'https://aispace-app.vercel.app/api/verify-license';
-```
+2. **프로젝트 선택**
+   - 배포한 프로젝트 클릭 (예: AISpace)
 
-### 3.2 빌드 및 테스트
+3. **배포 URL 확인 (3가지 방법)**
+
+   **방법 1: 프로젝트 메인 페이지**
+   - 프로젝트 페이지 상단에 **Domains** 섹션 확인
+   - 예: `your-project.vercel.app` 또는 커스텀 도메인
+
+   **방법 2: Deployments 탭**
+   - **Deployments** 탭 클릭
+   - 최신 배포(Ready 상태) 클릭
+   - 상단에 표시된 URL 확인
+   - 예: `https://your-project-xxxxx.vercel.app`
+
+   **방법 3: Settings > Domains**
+   - **Settings** > **Domains** 메뉴
+   - Production 도메인 확인
+
+4. **API 엔드포인트 URL 구성**
+   - 확인한 도메인 뒤에 `/api/verify-license` 추가
+   - 예: `https://your-project.vercel.app/api/verify-license`
+
+### 3.2 라이선스 API URL 설정
+
+1. **`src/js/license.js` 파일 열기**
+
+2. **`LICENSE_API_URL` 상수 찾기**
+   - 파일 상단에 있는 `const LICENSE_API_URL = 'YOUR_VERCEL_API_URL';` 찾기
+
+3. **Vercel API URL로 변경**
+   ```javascript
+   const LICENSE_API_URL = 'https://your-project.vercel.app/api/verify-license';
+   ```
+
+   **실제 예시:**
+   ```javascript
+   const LICENSE_API_URL = 'https://aispace-app.vercel.app/api/verify-license';
+   ```
+
+4. **파일 저장**
+
+### 3.3 빌드 및 테스트
 
 ```bash
 # 개발 모드로 실행
