@@ -1,11 +1,5 @@
 {
-  "version": 2,
   "buildCommand": "",
-  "outputDirectory": "",
-  "functions": {
-    "api/verify-license.js": {
-      "runtime": "@vercel/node"
-    }
-  }
+  "outputDirectory": ""
 }
 
