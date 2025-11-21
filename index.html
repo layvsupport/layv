@@ -231,6 +231,35 @@
       </div>
     </div>
 
+    <!-- 라이선스 입력 모달 -->
+    <div class="license-modal" id="license-modal" style="display: none;">
+      <div class="license-modal__overlay"></div>
+      <div class="license-modal__content">
+        <div class="license-modal__header">
+          <h2 class="license-modal__title">라이선스 키 입력</h2>
+        </div>
+        <form class="license-modal__form" id="license-form">
+          <div class="license-modal__field">
+            <label for="license-key">라이선스 키</label>
+            <input 
+              type="text" 
+              id="license-key" 
+              name="licenseKey" 
+              placeholder="XXXX-XXXX-XXXX-XXXX" 
+              required
+              autocomplete="off"
+              maxlength="19"
+            >
+            <p class="license-modal__hint">구매 시 받은 라이선스 키를 입력하세요.</p>
+          </div>
+          <div class="license-modal__message" id="license-message"></div>
+          <div class="license-modal__actions">
+            <button type="submit" class="license-modal__submit" id="license-submit-btn">인증</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <script type="module" src="./src/js/app.js"></script>
     <script type="module" src="./src/js/realglass-init.js"></script>
   </body>

@@ -1850,7 +1850,126 @@ function initProfileModal() {
   });
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+// 라이선스 모달 관련 함수들
+function showLicenseModal() {
+  const modal = document.getElementById('license-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    const licenseInput = document.getElementById('license-key');
+    if (licenseInput) {
+      licenseInput.focus();
+    }
+  }
+}
+
+function hideLicenseModal() {
+  const modal = document.getElementById('license-modal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+function showLicenseMessage(text, type) {
+  const messageEl = document.getElementById('license-message');
+  if (messageEl) {
+    messageEl.textContent = text;
+    messageEl.className = `license-modal__message license-modal__message--${type}`;
+  }
+}
+
+function hideLicenseMessage() {
+  const messageEl = document.getElementById('license-message');
+  if (messageEl) {
+    messageEl.textContent = '';
+    messageEl.className = 'license-modal__message';
+  }
+}
+
+// 라이선스 모달 초기화
+function initLicenseModal() {
+  const form = document.getElementById('license-form');
+  const submitBtn = document.getElementById('license-submit-btn');
+
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const licenseKey = document.getElementById('license-key')?.value.trim();
+    
+    if (!licenseKey) {
+      showLicenseMessage('라이선스 키를 입력하세요.', 'error');
+      return;
+    }
+
+    // 버튼 비활성화
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = '인증 중...';
+    }
+
+    showLicenseMessage('인증 중...', 'info');
+
+    try {
+      const result = await verifyLicense(licenseKey);
+
+      if (result.success) {
+        saveLicense({
+          key: licenseKey,
+          expiresAt: result.license?.expiresAt,
+          verifiedAt: new Date().toISOString(),
+        });
+        showLicenseMessage('인증 성공! 잠시 후 앱이 시작됩니다.', 'success');
+        
+        setTimeout(() => {
+          hideLicenseModal();
+          location.reload(); // 앱 재시작
+        }, 1500);
+      } else {
+        showLicenseMessage(result.error || '인증 실패', 'error');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = '인증';
+        }
+      }
+    } catch (error) {
+      console.error('라이선스 검증 오류:', error);
+      showLicenseMessage('인증 중 오류가 발생했습니다.', 'error');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '인증';
+      }
+    }
+  });
+
+  // 라이선스 키 입력 시 자동 포맷팅 (XXXX-XXXX-XXXX-XXXX)
+  const licenseInput = document.getElementById('license-key');
+  if (licenseInput) {
+    licenseInput.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+      if (value.length > 16) value = value.substring(0, 16);
+      
+      // 하이픈 추가
+      const formatted = value.match(/.{1,4}/g)?.join('-') || value;
+      e.target.value = formatted;
+      
+      // 메시지 숨기기
+      hideLicenseMessage();
+    });
+  }
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+  // 라이선스 모듈 import
+  const { isLicenseValid, verifyLicense, saveLicense } = await import('./license.js');
+  
+  // 라이선스 검증
+  if (!isLicenseValid()) {
+    // 라이선스 모달 초기화 및 표시
+    initLicenseModal();
+    showLicenseModal();
+    return; // 라이선스가 없으면 앱 초기화 중단
+  }
+
   // 커스텀 앱을 먼저 불러와서 appLookup에 추가 (캔버스 복원 전에 필요)
   loadCustomApps();
   customApps.forEach(app => {
