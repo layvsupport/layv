@@ -21,6 +21,8 @@
   ],
   "scripts": {
     "start": "electron .",
+    "smoke": "electron electron/smoke-production.mjs",
+    "smoke:claude": "electron electron/smoke-production.mjs https://claude.ai/",
     "pack": "electron-packager . LAYV --platform=win32 --arch=x64 --out=dist --overwrite --icon=assets/icons/icon.ico",
     "pack:all": "electron-packager . LAYV --all --out=dist --overwrite --icon=assets/icons/icon.ico",
     "build:win": "electron-builder --win",
@@ -37,15 +39,10 @@
     "files": [
       "electron/**/*",
       "src/**/*",
+      "assets/**/*",
+      "image/**/*",
       "index.html",
       "package.json"
-    ],
-    "extraFiles": [
-      {
-        "from": "assets",
-        "to": "assets",
-        "filter": ["**/*"]
-      }
     ],
     "win": {
       "target": [

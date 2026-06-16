@@ -3,92 +3,263 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https: blob:; connect-src 'self' https:; child-src 'self' https: webview:; frame-src 'self' https:; object-src 'none'; base-uri 'self';">
     <title>AISpace Control Center</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/pretendard@5.2.5/index.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" />
     <link rel="stylesheet" href="./src/css/reset.css?v=2" />
     <link rel="stylesheet" href="./src/css/base.css?v=2" />
-    <link rel="stylesheet" href="./src/css/layout.css?v=2" />
+    <link rel="stylesheet" href="./src/css/layout.css?v=27" />
     <script src="./src/js/RealGlass.standalone.js"></script>
   </head>
   <body>
-    <div class="app-shell">
-      <aside class="sidebar" aria-label="AI 서비스 목록">
-        <!-- LAYV 로고 및 타이틀 -->
-        <div class="sidebar__header">
-          <div class="sidebar__header-content">
-            <div class="sidebar__logo">
-              <svg width="39" height="39" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M38.4248 12.0199C38.4248 11.5607 38.4248 11.1022 38.4222 10.643C38.4197 10.2569 38.4152 9.87005 38.4049 9.48388C38.3825 8.64174 38.3326 7.79255 38.1834 6.96001C38.0316 6.11467 37.7837 5.32824 37.3925 4.56038C37.0082 3.80534 36.5068 3.11561 35.908 2.51682C35.3092 1.91868 34.6195 1.41659 33.8644 1.03235C33.0972 0.641694 32.3108 0.393854 31.4661 0.242076C30.6329 0.0922195 29.7837 0.0429077 28.9416 0.0198528C28.5548 0.0096062 28.1686 0.00512331 27.7818 0.00256165C27.3232 0 26.8641 0 26.4049 0H12.0199C11.5614 0 11.1022 0 10.6437 0.00256165C10.2569 0.00512331 9.87005 0.0096062 9.48388 0.0198528C8.64174 0.0429077 7.79191 0.0922195 6.95937 0.242076C6.11467 0.393854 5.32824 0.641694 4.56102 1.03235C3.80598 1.41659 3.11561 1.91868 2.51747 2.51682C1.91868 3.11561 1.41723 3.80534 1.03299 4.56038C0.641694 5.32824 0.393854 6.11467 0.242076 6.96001C0.09286 7.79255 0.0429077 8.64174 0.0204932 9.48388C0.0102466 9.87005 0.00512331 10.2569 0.00320207 10.643C0 11.1022 0 11.5607 0 12.0199V26.4049C0 26.8641 0 27.3226 0.00320207 27.7818C0.00512331 28.1679 0.0102466 28.5548 0.0204932 28.9409C0.0429077 29.7831 0.09286 30.6323 0.242076 31.4648C0.393854 32.3101 0.641694 33.0972 1.03299 33.8651C1.41723 34.6195 1.91868 35.3092 2.51747 35.9073C3.11561 36.5068 3.80598 37.0082 4.56102 37.3925C5.32824 37.7831 6.11467 38.0309 6.95937 38.1827C7.79191 38.3319 8.64174 38.3825 9.48388 38.4049C9.87005 38.4152 10.2569 38.4197 10.6437 38.4222C11.1022 38.4248 11.5614 38.4248 12.0199 38.4248H26.4049C26.8641 38.4248 27.3232 38.4248 27.7818 38.4222C28.1686 38.4197 28.5548 38.4152 28.9416 38.4049C29.7837 38.3825 30.6329 38.3319 31.4661 38.1827C32.3108 38.0309 33.0972 37.7831 33.8644 37.3925C34.6195 37.0082 35.3092 36.5068 35.908 35.9073C36.5068 35.3092 37.0082 34.6195 37.3925 33.8651C37.7837 33.0972 38.0316 32.3101 38.1834 31.4648C38.3326 30.6323 38.3825 29.7831 38.4049 28.9409C38.4152 28.5548 38.4197 28.1679 38.4222 27.7818C38.4248 27.3226 38.4248 26.8641 38.4248 26.4049V12.0199Z" fill="#222222"/>
-                <path d="M24.9846 29.0276H10.5577C9.87793 29.0276 9.32812 28.4778 9.32812 27.798V13.3834C9.32812 13.0567 9.4581 12.744 9.68822 12.5139L12.4812 9.72092C12.7113 9.4908 13.024 9.36082 13.3507 9.36082H27.7653C28.4451 9.36082 28.9949 9.91063 28.9949 10.5904V25.012C28.9949 25.337 28.8649 25.6497 28.6348 25.8815L25.8541 28.6675C25.624 28.8994 25.3096 29.0276 24.9846 29.0276Z" fill="url(#paint0_linear_126_938)"/>
-                <defs>
-                  <linearGradient id="paint0_linear_126_938" x1="30.0389" y1="9.47934" x2="6.99381" y2="30.9532" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#1F22A0"/>
-                    <stop offset="1" stop-color="#C2CFFF"/>
-                  </linearGradient>
-                </defs>
-              </svg>
+    <!-- 앱 창 타이틀바 (Electron frameless: 드래그·최소화·최대화·닫기) -->
+    <header class="app-title-bar" id="app-title-bar">
+      <div class="app-title-bar__drag">
+        <span class="app-title-bar__title">LAYV</span>
+      </div>
+      <div class="app-title-bar__controls">
+        <button type="button" class="app-title-bar__btn" id="title-bar-minimize" aria-label="최소화">
+          <span class="material-symbols-outlined" style="font-size: 16px;">remove</span>
+        </button>
+        <button type="button" class="app-title-bar__btn" id="title-bar-maximize" aria-label="최대화">
+          <span class="material-symbols-outlined title-bar-maximize-icon" style="font-size: 14px;">crop_square</span>
+          <span class="material-symbols-outlined title-bar-restore-icon" style="font-size: 14px; display: none;">filter_none</span>
+        </button>
+        <button type="button" class="app-title-bar__btn app-title-bar__btn--close" id="title-bar-close" aria-label="닫기">
+          <span class="material-symbols-outlined" style="font-size: 16px;">close</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 앱 콜드 스타트 스플래시 (최초 1회, JS에서 종료) -->
+    <div id="app-splash" class="app-splash" aria-hidden="false" aria-label="LAYV">
+      <div class="app-splash__backdrop" aria-hidden="true"></div>
+      <div class="app-splash__content">
+        <img class="app-splash__logo" src="assets/icons/SVG/logo_full.svg" alt="LAYV" width="220" height="78" />
+      </div>
+    </div>
+
+    <!-- ============ HOME VIEW ============ -->
+    <div id="home-view" class="home-view view-visible">
+      <aside class="home-sidebar">
+        <!-- 로고 -->
+        <div class="home-sidebar__header">
+          <img class="home-sidebar__logo" src="assets/icons/SVG/logo_full.svg" alt="LAYV" width="85" height="30">
+        </div>
+
+        <!-- 메뉴 (assets/icons SVG) -->
+        <nav class="home-sidebar__menu">
+          <button class="home-sidebar__menu-item" data-menu="calendar">
+            <span class="home-sidebar__menu-icon" aria-hidden="true"><img src="assets/icons/calendar.svg" alt=""></span>
+            <span>Calendar</span>
+          </button>
+          <button class="home-sidebar__menu-item" data-menu="trash">
+            <span class="home-sidebar__menu-icon" aria-hidden="true"><img src="assets/icons/trash.svg" alt=""></span>
+            <span>Trash</span>
+          </button>
+          <button class="home-sidebar__menu-item home-sidebar__menu-item--active" data-menu="library">
+            <span class="home-sidebar__menu-icon" aria-hidden="true"><img src="assets/icons/ProjectLibrary.svg" alt=""></span>
+            <span>Project Library</span>
+          </button>
+        </nav>
+
+        <div class="home-sidebar__divider"></div>
+
+        <!-- 프로젝트 폴더 트리 (동적 렌더링) -->
+        <div class="home-sidebar__folders">
+          <div id="home-sidebar-folders-root">
+            <!-- renderFolderTree()로 동적 채워짐 -->
+          </div>
+        </div>
+
+        <div class="home-sidebar__footer">
+          <div class="home-sidebar__divider"></div>
+          <!-- 유저 프로필 -->
+          <div class="home-sidebar__profile" id="home-profile" role="button" tabindex="0" aria-label="프로필 설정">
+          <div class="home-sidebar__profile-avatar" id="home-profile-avatar">U</div>
+          <div class="home-sidebar__profile-info">
+            <span class="home-sidebar__profile-name" id="home-profile-name">User</span>
+            <span class="home-sidebar__profile-email" id="home-profile-email"></span>
+          </div>
+          <span class="material-symbols-outlined" style="font-size: 18px; color: #616161;">arrow_forward_ios</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="home-main">
+        <!-- 기본 메인: 제목 + 검색 + 탭 + 그리드 -->
+        <div id="home-default-content" class="home-main__default">
+          <h2 class="home-main__title">Make your ai project!</h2>
+
+          <div class="home-search">
+            <span class="home-search__icon" aria-hidden="true"><img src="assets/icons/search.svg" alt=""></span>
+            <input type="text" class="home-search__input" id="home-search-input" placeholder="Is there a file name you are looking for?">
+          </div>
+
+          <div class="home-toolbar">
+            <div class="home-tabs">
+              <button class="home-tabs__item home-tabs__item--active" data-tab="project">Project</button>
+              <button class="home-tabs__item" data-tab="liked">Liked Projects</button>
+              <button class="home-tabs__item" data-tab="collection">Prompt Collection</button>
             </div>
-            <h1 class="sidebar__title">LAYV</h1>
+            <div class="home-actions">
+              <button class="home-actions__btn" id="home-edit-btn" title="편집">
+                <img src="assets/icons/write.svg" alt="편집">
+              </button>
+              <button class="home-actions__btn home-actions__btn--new" id="home-new-project-btn">
+                <span>New project</span>
+              </button>
+              <button class="home-actions__btn home-actions__btn--sort" id="home-sort-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                <span class="home-actions__btn-sort-label">Date created</span>
+                <img src="assets/icons/arrow.svg" alt="" class="home-actions__btn-sort-arrow">
+              </button>
+            </div>
+          </div>
+
+          <div class="project-grid" id="project-grid">
+            <!-- 동적으로 채워짐 -->
+          </div>
+        </div>
+
+        <!-- AI 결제 관리 (캘린더 클릭 시 표시) -->
+        <div id="home-calendar-panel" class="home-calendar-panel" style="display: none;" aria-label="AI 결제 관리">
+          <div class="home-calendar-card">
+            <div class="home-calendar-panel__left">
+              <div class="home-calendar-mini" id="home-calendar-mini">
+                <div class="home-calendar-mini__header">
+                  <span class="home-calendar-mini__month" id="home-calendar-mini-month">2026.04</span>
+                  <div class="home-calendar-mini__nav">
+                    <button type="button" class="home-calendar-mini__nav-btn" id="home-calendar-mini-prev" aria-label="이전 달"><span class="material-symbols-outlined">chevron_left</span></button>
+                    <button type="button" class="home-calendar-mini__nav-btn" id="home-calendar-mini-next" aria-label="다음 달"><span class="material-symbols-outlined">chevron_right</span></button>
+                  </div>
+                </div>
+                <div class="home-calendar-mini__body">
+                  <div class="home-calendar-mini__weekdays">
+                    <span class="home-calendar-mini__weekday--sun">S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span class="home-calendar-mini__weekday--sun">S</span>
+                  </div>
+                  <div class="home-calendar-mini__grid" id="home-calendar-mini-grid"></div>
+                </div>
+              </div>
+              <div class="home-upcoming-payment" id="home-upcoming-payment">
+                <button type="button" class="home-upcoming-payment__toggle" id="home-upcoming-payment-toggle" aria-expanded="true">
+                  <span class="material-symbols-outlined home-upcoming-payment__arrow">expand_more</span>
+                  <span class="home-upcoming-payment__toggle-icon" aria-hidden="true"><img src="assets/icons/upcoming.svg" alt=""></span>
+                  <span class="home-upcoming-payment__toggle-text">Upcoming AI Payment</span>
+                </button>
+                <div class="home-upcoming-payment__list" id="home-upcoming-payment-list"></div>
+              </div>
+              <div class="home-my-tasks" id="home-my-tasks">
+                <div class="home-my-tasks__header">
+                  <button type="button" class="home-my-tasks__toggle" id="home-my-tasks-toggle" aria-expanded="true">
+                    <span class="material-symbols-outlined home-my-tasks__arrow">expand_more</span>
+                    <span class="material-symbols-outlined home-my-tasks__toggle-icon">checklist</span>
+                    <span class="home-my-tasks__toggle-text">My Tasks</span>
+                  </button>
+                  <button type="button" class="home-my-tasks__filter-clear" id="home-my-tasks-filter-clear" hidden aria-label="날짜 필터 해제">
+                    <span class="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+                <div class="home-my-tasks__list" id="home-my-tasks-list"></div>
+              </div>
+            </div>
+            <div class="home-calendar-panel__right">
+              <div class="home-calendar-main" id="home-calendar-main">
+                <div class="home-calendar-main__header">
+                  <button type="button" class="home-calendar-main__nav" id="home-calendar-main-prev" aria-label="이전"><span class="material-symbols-outlined">chevron_left</span></button>
+                  <span class="home-calendar-main__month" id="home-calendar-main-month">2026.04</span>
+                  <button type="button" class="home-calendar-main__nav" id="home-calendar-main-next" aria-label="다음"><span class="material-symbols-outlined">chevron_right</span></button>
+                </div>
+                <div class="home-calendar-main__weekdays">
+                  <span>Monday</span><span>Tuesday</span><span>Wednesday</span><span>Thursday</span><span>Friday</span><span>Saturday</span><span class="home-calendar-main__weekday--sun">Sunday</span>
+                </div>
+                <div class="home-calendar-main__grid" id="home-calendar-main-grid"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- 홈 첫 실행 온보딩 (최초 1회) -->
+      <div id="home-onboarding-overlay" class="home-onboarding-overlay home-onboarding-overlay--hidden" hidden aria-modal="true" role="dialog" aria-label="시작 안내">
+        <div class="home-onboarding-overlay__backdrop"></div>
+        <div class="home-onboarding-overlay__panel">
+          <div class="home-onboarding-overlay__content">
+            <img src="assets/Slide 16_9 - 228.png" alt="" class="home-onboarding-overlay__image" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ WORKSPACE VIEW ============ -->
+    <div id="workspace-view" class="app-shell">
+      <aside class="sidebar" aria-label="AI 서비스 목록">
+        <!-- LAYV 로고 (클릭 시 홈으로) -->
+        <div class="sidebar__header">
+          <div class="sidebar__header-content" title="홈으로 돌아가기" aria-label="홈으로 돌아가기" role="button" tabindex="0">
+            <img class="sidebar__logo sidebar__logo--full" src="assets/icons/SVG/logo_full.svg" alt="LAYV" width="85" height="30">
+            <img class="sidebar__logo sidebar__logo--icon" src="assets/icons/SVG/logo_icon.svg" alt="" width="32" height="32" aria-hidden="true">
           </div>
           <button type="button" class="sidebar__toggle" id="sidebar-toggle" title="사이드바 접기/펼치기" aria-label="사이드바 토글">
             <span class="sidebar__toggle-icon material-symbols-outlined">keyboard_double_arrow_left</span>
           </button>
         </div>
 
-        <!-- 앱 폴더 토글 헤더 -->
-        <button type="button" class="sidebar__folder-toggle" id="apps-folder-toggle" aria-expanded="true">
-          <span class="sidebar__folder-arrow material-symbols-outlined">arrow_forward_ios</span>
-          <span class="sidebar__folder-icon material-symbols-outlined">folder</span>
-          <span class="sidebar__folder-name">Apps</span>
-        </button>
-        
-        <nav class="sidebar__apps-wrapper" id="apps-wrapper" aria-label="AI 아이콘">
-          <button class="sidebar__apps-settings" aria-label="설정">
-            <svg width="14" height="14" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
-              <path d="m1080.7 730.97-57.516-35.719c-70.641-43.828-70.641-146.63 0-190.45l57.562-35.719c29.344-18.188 38.344-56.766 20.156-86.062l-84.141-135.52c-18.188-29.344-56.766-38.344-86.062-20.156l-17.156 10.641c-74.672 46.359-171.19-7.3594-171.19-95.25v-20.203c0-34.547-27.984-62.531-62.531-62.531h-159.52c-34.547 0-62.531 27.984-62.531 62.531v20.203c0 87.891-96.562 141.61-171.19 95.25l-17.156-10.641c-29.344-18.188-67.875-9.1875-86.062 20.156l-84.141 135.52c-18.188 29.344-9.1875 67.875 20.156 86.062l57.516 35.719c70.641 43.828 70.641 146.63 0 190.45l-57.516 35.719c-29.344 18.188-38.344 56.766-20.156 86.062l84.141 135.52c18.188 29.344 56.766 38.344 86.062 20.156l17.156-10.641c74.672-46.359 171.19 7.3594 171.19 95.25v20.203c0 34.547 27.984 62.531 62.531 62.531h159.52c34.547 0 62.531-27.984 62.531-62.531v-20.203c0-87.891 96.516-141.61 171.19-95.25l17.156 10.641c29.344 18.188 67.875 9.1875 86.062-20.156l84.141-135.52c18.188-29.344 9.1875-67.875-20.156-86.062zm-480.71 64.312c-107.86 0-195.28-87.422-195.28-195.28 0-107.86 87.422-195.28 195.28-195.28s195.28 87.422 195.28 195.28c0 107.86-87.422 195.28-195.28 195.28z"/>
-            </svg>
-          </button>
-          <div class="sidebar__apps" id="ai-app-list"></div>
-        </nav>
+        <div class="sidebar__scroll" aria-label="패널 및 저장 목록">
+          <div class="sidebar__scroll-top">
+            <!-- 앱 폴더 토글 헤더 -->
+            <button type="button" class="sidebar__folder-toggle" id="apps-folder-toggle" aria-expanded="true">
+              <span class="sidebar__folder-arrow material-symbols-outlined">arrow_forward_ios</span>
+              <span class="sidebar__folder-icon" aria-hidden="true"><img src="assets/icons/pannel.svg" alt="" style="width:14px;height:14px;"></span>
+              <span class="sidebar__folder-name">Panel</span>
+            </button>
 
-        <!-- Community 폴더 -->
-        <button type="button" class="sidebar__folder-toggle sidebar__folder-toggle--collapsed" id="community-folder-toggle" aria-expanded="false">
-          <span class="sidebar__folder-arrow material-symbols-outlined">arrow_forward_ios</span>
-          <span class="sidebar__folder-icon material-symbols-outlined">box</span>
-          <span class="sidebar__folder-name">Community</span>
-        </button>
-        
-        <nav class="sidebar__apps-wrapper sidebar__apps-wrapper--collapsed sidebar__apps-wrapper--empty" id="community-wrapper" aria-label="커뮤니티">
-          <button class="sidebar__apps-settings" aria-label="설정">
-            <svg width="14" height="14" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
-              <path d="m1080.7 730.97-57.516-35.719c-70.641-43.828-70.641-146.63 0-190.45l57.562-35.719c29.344-18.188 38.344-56.766 20.156-86.062l-84.141-135.52c-18.188-29.344-56.766-38.344-86.062-20.156l-17.156 10.641c-74.672 46.359-171.19-7.3594-171.19-95.25v-20.203c0-34.547-27.984-62.531-62.531-62.531h-159.52c-34.547 0-62.531 27.984-62.531 62.531v20.203c0 87.891-96.562 141.61-171.19 95.25l-17.156-10.641c-29.344-18.188-67.875-9.1875-86.062 20.156l-84.141 135.52c-18.188 29.344-9.1875 67.875 20.156 86.062l57.516 35.719c70.641 43.828 70.641 146.63 0 190.45l-57.516 35.719c-29.344 18.188-38.344 56.766-20.156 86.062l84.141 135.52c18.188 29.344 56.766 38.344 86.062 20.156l17.156-10.641c74.672-46.359 171.19 7.3594 171.19 95.25v20.203c0 34.547 27.984 62.531 62.531 62.531h159.52c34.547 0 62.531-27.984 62.531-62.531v-20.203c0-87.891 96.516-141.61 171.19-95.25l17.156 10.641c29.344 18.188 67.875 9.1875 86.062-20.156l84.141-135.52c18.188-29.344 9.1875-67.875-20.156-86.062zm-480.71 64.312c-107.86 0-195.28-87.422-195.28-195.28 0-107.86 87.422-195.28 195.28-195.28s195.28 87.422 195.28 195.28c0 107.86-87.422 195.28-195.28 195.28z"/>
-            </svg>
-          </button>
-          <div class="sidebar__apps" id="community-list"></div>
-        </nav>
+            <nav class="sidebar__apps-wrapper" id="apps-wrapper" aria-label="AI 아이콘">
+              <div class="sidebar__apps" id="ai-app-list"></div>
+            </nav>
 
-        <!-- My Pack 폴더 -->
-        <button type="button" class="sidebar__folder-toggle sidebar__folder-toggle--collapsed" id="mypack-folder-toggle" aria-expanded="false">
-          <span class="sidebar__folder-arrow material-symbols-outlined">arrow_forward_ios</span>
-          <span class="sidebar__folder-icon material-symbols-outlined">box</span>
-          <span class="sidebar__folder-name">My Pack</span>
-        </button>
-        
-        <nav class="sidebar__apps-wrapper sidebar__apps-wrapper--collapsed sidebar__apps-wrapper--empty" id="mypack-wrapper" aria-label="마이 팩">
-          <button class="sidebar__apps-settings" aria-label="설정">
-            <svg width="14" height="14" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
-              <path d="m1080.7 730.97-57.516-35.719c-70.641-43.828-70.641-146.63 0-190.45l57.562-35.719c29.344-18.188 38.344-56.766 20.156-86.062l-84.141-135.52c-18.188-29.344-56.766-38.344-86.062-20.156l-17.156 10.641c-74.672 46.359-171.19-7.3594-171.19-95.25v-20.203c0-34.547-27.984-62.531-62.531-62.531h-159.52c-34.547 0-62.531 27.984-62.531 62.531v20.203c0 87.891-96.562 141.61-171.19 95.25l-17.156-10.641c-29.344-18.188-67.875-9.1875-86.062 20.156l-84.141 135.52c-18.188 29.344-9.1875 67.875 20.156 86.062l57.516 35.719c70.641 43.828 70.641 146.63 0 190.45l-57.516 35.719c-29.344 18.188-38.344 56.766-20.156 86.062l84.141 135.52c18.188 29.344 56.766 38.344 86.062 20.156l17.156-10.641c74.672-46.359 171.19 7.3594 171.19 95.25v20.203c0 34.547 27.984 62.531 62.531 62.531h159.52c34.547 0 62.531-27.984 62.531-62.531v-20.203c0-87.891 96.516-141.61 171.19-95.25l17.156 10.641c29.344 18.188 67.875 9.1875 86.062-20.156l84.141-135.52c18.188-29.344 9.1875-67.875-20.156-86.062zm-480.71 64.312c-107.86 0-195.28-87.422-195.28-195.28 0-107.86 87.422-195.28 195.28-195.28s195.28 87.422 195.28 195.28c0 107.86-87.422 195.28-195.28 195.28z"/>
-            </svg>
-          </button>
-          <div class="sidebar__apps" id="mypack-list"></div>
-        </nav>
+            <div class="sidebar__divider" role="separator" aria-hidden="true"></div>
 
-        <!-- 마이 페이지 버튼 -->
+            <!-- Save prompt 폴더 (통합) -->
+            <button type="button" class="sidebar__folder-toggle sidebar__folder-toggle--collapsed" id="saveprompt-folder-toggle" aria-expanded="false">
+              <span class="sidebar__folder-arrow material-symbols-outlined">arrow_forward_ios</span>
+              <span class="sidebar__folder-icon" aria-hidden="true"><img src="assets/icons/save.svg" alt="" style="width:14px;height:14px;"></span>
+              <span class="sidebar__folder-name">Save prompt</span>
+            </button>
+
+            <nav class="sidebar__apps-wrapper sidebar__apps-wrapper--collapsed" id="saveprompt-wrapper" aria-label="프롬프트 저장">
+              <div class="saveprompt-form" id="saveprompt-form">
+                <div class="saveprompt-form__thumb" id="saveprompt-thumb">
+                  <img src="assets/icons/image.svg" alt="" class="saveprompt-form__thumb-icon">
+                  <input type="file" accept="image/*" id="saveprompt-file" hidden>
+                </div>
+                <div class="saveprompt-form__fields">
+                  <input type="text" class="saveprompt-form__title" id="saveprompt-title" placeholder="Prompt title">
+                  <textarea class="saveprompt-form__prompt" id="saveprompt-prompt" placeholder="Please enter the prompt" rows="2"></textarea>
+                </div>
+                <button type="button" class="saveprompt-form__submit" id="saveprompt-submit">추가하기</button>
+              </div>
+            </nav>
+
+            <div class="sidebar__divider" role="separator" aria-hidden="true"></div>
+          </div>
+
+          <div class="sidebar__scroll-saved" aria-label="저장된 프롬프트 폴더">
+            <!-- 저장 프롬프트: 폴더마다 토글 행 + 목록 (JS가 workspace-saved-folders-root에 렌더) -->
+            <div id="workspace-saved-folders-root" class="workspace-saved-folders-root home-sidebar__folders" aria-label="Saved prompt folders"></div>
+          </div>
+        </div>
+
+        <!-- 마이 페이지 버튼 (홈 프로필과 동일 구조) -->
         <button type="button" class="sidebar__mypage" id="mypage-button" aria-label="마이 페이지">
           <div class="sidebar__mypage-avatar">
             <span>U</span>
           </div>
-          <span class="sidebar__mypage-name">MyPage</span>
+          <div class="sidebar__mypage-info">
+            <span class="sidebar__mypage-name">MyPage</span>
+            <span class="sidebar__mypage-email"></span>
+          </div>
           <span class="sidebar__mypage-arrow material-symbols-outlined">arrow_forward_ios</span>
         </button>
       </aside>
@@ -97,11 +268,16 @@
         <header class="workspace__topbar">
           <div class="workspace__tabs">
             <div class="workspace__tabs-list" id="canvas-tabs" role="tablist"></div>
-            <button type="button" class="workspace__tabs-add" id="add-canvas-btn" title="새 캔버스 추가">+</button>
+            <button type="button" class="workspace__tabs-add" id="add-canvas-btn" title="새 캔버스 추가">
+              <img src="assets/icons/plus.svg" alt="" class="workspace__tabs-add-icon">
+            </button>
           </div>
           <div class="workspace__controls">
+            <button type="button" class="workspace__layout-btn" id="layout-btn" title="레이아웃 변경" style="display: none;">
+              <img src="assets/icons/pannel.svg" alt="" class="workspace__layout-btn-icon">
+            </button>
             <button type="button" class="help-button" id="help-button" title="도움말" aria-label="도움말">
-              <span class="help-button__icon">?</span>
+              <img src="assets/icons/qna.svg" alt="" class="help-button__icon">
             </button>
           </div>
         </header>
@@ -111,12 +287,19 @@
         <!-- 통합 플로팅 컨트롤 -->
         <div class="floating-control" id="floating-control">
           <div class="floating-control__wrapper">
-            <textarea
-              id="unified-input"
-              class="floating-control__textarea"
-              placeholder="/c (빠른 실행) 또는 프롬프트 입력 (일괄 전송)..."
-              rows="1"
-            ></textarea>
+            <div class="floating-control__input-group">
+              <span class="floating-control__prompt-icon" aria-hidden="true">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5.97781 1.72207H2.66068C1.56149 1.72207 0.67041 2.61312 0.67041 3.71228V10.3464C0.67041 11.4455 1.56149 12.3366 2.66068 12.3366H9.29493C10.3941 12.3366 11.2852 11.4455 11.2852 10.3464L11.2852 7.02933M3.98753 9.01951L6.40128 8.53317C6.52942 8.50735 6.64708 8.44426 6.73948 8.35181L12.1429 2.9456C12.402 2.6864 12.4018 2.26625 12.1425 2.00727L10.9979 0.863963C10.7387 0.605088 10.3187 0.605264 10.0598 0.864357L4.6558 6.27112C4.56358 6.36339 4.50061 6.48081 4.47476 6.60868L3.98753 9.01951Z" stroke="#B1B5C5" stroke-width="1.34062" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <textarea
+                id="unified-input"
+                class="floating-control__textarea"
+                placeholder="Send one prompt to all AI"
+                rows="1"
+              ></textarea>
+            </div>
             <button type="button" id="send-btn" class="floating-control__send-btn">
               <span class="floating-control__send-icon">📤</span>
               <span class="floating-control__send-text">Send</span>
@@ -124,7 +307,25 @@
           </div>
         </div>
       </main>
-    </div>
+      <!-- 환영 오버레이 (프로젝트 첫 진입 시) -->
+      <div id="workspace-welcome-overlay" class="workspace-welcome-overlay workspace-welcome-overlay--hidden" aria-modal="true" role="dialog">
+        <div class="workspace-welcome-overlay__backdrop"></div>
+        <img src="image/exam1.png" alt="" class="workspace-welcome-overlay__image" />
+        <button type="button" class="workspace-welcome-overlay__close" id="workspace-welcome-close" aria-label="닫기">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <!-- 워크스페이스 첫 진입 온보딩 (최초 1회) -->
+      <div id="workspace-onboarding-overlay" class="workspace-onboarding-overlay workspace-onboarding-overlay--hidden" hidden aria-modal="true" role="dialog" aria-label="워크스페이스 안내">
+        <div class="workspace-onboarding-overlay__backdrop"></div>
+        <div class="workspace-onboarding-overlay__panel">
+          <div class="workspace-onboarding-overlay__content">
+            <img src="assets/Slide 16_9 - 237.png" alt="" class="workspace-onboarding-overlay__image" />
+          </div>
+        </div>
+      </div>
+    </div><!-- /workspace-view -->
 
     <template id="window-template">
       <article class="ai-window" role="group">
@@ -141,11 +342,11 @@
               <input type="checkbox" class="ai-window__toggle-input" data-action="toggle-prompt" checked />
               <span class="ai-window__toggle-indicator"></span>
             </label>
-            <button class="ai-window__action" data-action="refresh" title="새로고침">
-              <span aria-hidden="true">⟳</span>
+            <button class="ai-window__action" data-action="refresh" title="새로고침" aria-label="새로고침">
+              <img src="assets/icons/SVG/refresh.svg" alt="" width="11" height="11">
             </button>
             <button class="ai-window__action" data-action="close" title="닫기">
-              <span aria-hidden="true">×</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
         </header>
@@ -198,6 +399,89 @@
       </div>
     </div>
 
+    <!-- 앱 아이콘 우클릭 컨텍스트 메뉴 (Edit link / Delete) -->
+    <div class="sidebar-app-context-menu" id="sidebar-app-context-menu" role="menu" aria-label="앱 메뉴" style="display: none;">
+      <button type="button" class="sidebar-app-context-menu__item" data-action="edit-link" role="menuitem">Edit link</button>
+      <button type="button" class="sidebar-app-context-menu__item sidebar-app-context-menu__item--danger" data-action="delete" role="menuitem">Delete</button>
+    </div>
+
+    <!-- Add link 팝업 (Figma 451-9133: 앱 추가) -->
+    <div class="add-link-modal" id="add-link-modal" style="display: none;">
+      <div class="add-link-modal__overlay"></div>
+      <div class="add-link-modal__content">
+        <div class="add-link-modal__header">
+          <h2 class="add-link-modal__title">Add link</h2>
+          <button type="button" class="add-link-modal__close" id="add-link-modal-close" aria-label="닫기">×</button>
+        </div>
+        <form class="add-link-modal__form" id="add-link-form">
+          <div class="add-link-modal__body">
+            <div class="add-link-modal__icon-section">
+              <label class="add-link-modal__icon-label">App icon</label>
+              <div class="add-link-modal__icon-box" id="add-link-icon-box">
+                <img class="add-link-modal__icon-preview" id="add-link-icon-preview" src="" alt="" style="display: none;">
+                <img class="add-link-modal__icon-placeholder" id="add-link-icon-placeholder" src="assets/icons/image.svg" alt="">
+                <input type="file" id="add-link-icon-input" accept="image/*" class="add-link-modal__icon-input" aria-label="앱 아이콘 선택">
+              </div>
+            </div>
+            <div class="add-link-modal__fields">
+              <div class="add-link-modal__field">
+                <label for="add-link-site-name">Site name</label>
+                <input type="text" id="add-link-site-name" name="siteName" placeholder="Enter the site name" required>
+              </div>
+              <div class="add-link-modal__field">
+                <label for="add-link-website-url">Website URL</label>
+                <input type="url" id="add-link-website-url" name="url" placeholder="https://example.com" required>
+              </div>
+            </div>
+          </div>
+          <div class="add-link-modal__actions">
+            <button type="submit" class="add-link-modal__complete">Complete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Edit link 팝업 (Figma 스타일) -->
+    <div class="edit-link-modal" id="edit-link-modal" style="display: none;">
+      <div class="edit-link-modal__overlay"></div>
+      <div class="edit-link-modal__content">
+        <div class="edit-link-modal__header">
+          <h2 class="edit-link-modal__title">Edit link</h2>
+          <button type="button" class="edit-link-modal__close" id="edit-link-modal-close" aria-label="닫기">×</button>
+        </div>
+        <form class="edit-link-modal__form" id="edit-link-form">
+          <div class="edit-link-modal__body">
+            <div class="edit-link-modal__icon-section">
+              <label class="edit-link-modal__icon-label" for="edit-link-icon-input">App icon</label>
+              <div class="edit-link-modal__icon-box" id="edit-link-icon-box">
+                <img class="edit-link-modal__icon-preview" id="edit-link-icon-preview" src="" alt="" style="display: none;">
+                <img class="edit-link-modal__icon-placeholder" id="edit-link-icon-placeholder" src="assets/icons/image.svg" alt="">
+                <input type="file" id="edit-link-icon-input" accept="image/png,image/jpeg,image/jpg,image/svg+xml,.svg" class="edit-link-modal__icon-input" aria-label="앱 아이콘 선택">
+              </div>
+              <button type="button" class="edit-link-modal__icon-reset" id="edit-link-icon-reset">기본 파비콘 사용</button>
+            </div>
+            <div class="edit-link-modal__fields">
+              <div class="edit-link-modal__field">
+                <label for="edit-link-site-name">Site name</label>
+                <input type="text" id="edit-link-site-name" name="siteName" placeholder="Enter the site name" required>
+              </div>
+              <div class="edit-link-modal__field">
+                <label for="edit-link-url">Website URL</label>
+                <input type="url" id="edit-link-url" name="url" placeholder="https://example.com" required>
+              </div>
+              <div class="edit-link-modal__field">
+                <label for="edit-link-icon-url">Icon image URL</label>
+                <input type="url" id="edit-link-icon-url" name="iconUrl" placeholder="https://example.com/icon.png">
+              </div>
+            </div>
+          </div>
+          <div class="edit-link-modal__actions">
+            <button type="submit" class="edit-link-modal__complete" id="edit-link-complete">Complete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- 프로필 설정 팝업 -->
     <div class="profile-modal" id="profile-modal" style="display: none;">
       <div class="profile-modal__overlay"></div>
@@ -236,7 +520,7 @@
       <div class="license-modal__overlay"></div>
       <div class="license-modal__content">
         <div class="license-modal__header">
-          <h2 class="license-modal__title">라이선스 키 입력</h2>
+          <h2 class="license-modal__title">테스터용 라이선스 키 입력</h2>
         </div>
         <form class="license-modal__form" id="license-form">
           <div class="license-modal__field">
@@ -250,7 +534,7 @@
               autocomplete="off"
               maxlength="19"
             >
-            <p class="license-modal__hint">구매 시 받은 라이선스 키를 입력하세요.</p>
+            <p class="license-modal__hint">부여 받은 라이선스 키를 입력하세요.</p>
           </div>
           <div class="license-modal__message" id="license-message"></div>
           <div class="license-modal__actions">
@@ -260,7 +544,377 @@
       </div>
     </div>
 
+    <!-- 프롬프트 저장 모달 -->
+    <div class="prompt-save-modal" id="prompt-save-modal" style="display: none;">
+      <div class="prompt-save-modal__overlay"></div>
+      <div class="prompt-save-modal__content">
+        <div class="prompt-save-modal__header">
+          <h2 class="prompt-save-modal__title">프롬프트 저장</h2>
+          <button class="prompt-save-modal__close" id="prompt-save-modal-close-btn" aria-label="닫기">×</button>
+        </div>
+        <form class="prompt-save-modal__form" id="prompt-save-form">
+          <div class="prompt-save-modal__field">
+            <label for="prompt-folder">폴더</label>
+            <div class="prompt-save-modal__folder-select">
+              <select id="prompt-folder" name="folder" class="prompt-save-modal__select">
+                <option value="">새 폴더 생성...</option>
+              </select>
+              <input type="text" id="prompt-new-folder" name="newFolder" placeholder="폴더 이름" class="prompt-save-modal__input" style="display: none;">
+            </div>
+          </div>
+          <div class="prompt-save-modal__field">
+            <label for="prompt-name">프롬프트 이름</label>
+            <input type="text" id="prompt-name" name="name" placeholder="프롬프트 이름" required maxlength="50" class="prompt-save-modal__input">
+          </div>
+          <div class="prompt-save-modal__field">
+            <label for="prompt-content">프롬프트 내용</label>
+            <textarea id="prompt-content" name="content" placeholder="프롬프트 내용을 입력하세요" required rows="6" class="prompt-save-modal__textarea"></textarea>
+          </div>
+          <div class="prompt-save-modal__actions">
+            <button type="button" class="prompt-save-modal__cancel" id="prompt-save-modal-cancel-btn">취소</button>
+            <button type="submit" class="prompt-save-modal__submit">저장</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 프롬프트 보기/수정 모달 -->
+    <div class="prompt-view-modal" id="prompt-view-modal" style="display: none;">
+      <div class="prompt-view-modal__overlay"></div>
+      <div class="prompt-view-modal__content">
+        <div class="prompt-view-modal__header">
+          <h2 class="prompt-view-modal__title">프롬프트 보기</h2>
+          <button type="button" class="prompt-view-modal__close" id="prompt-view-modal-close-btn" aria-label="닫기">
+            <span class="material-symbols-outlined" aria-hidden="true">close</span>
+          </button>
+        </div>
+        <form class="prompt-view-modal__form" id="prompt-view-form">
+          <div class="prompt-view-modal__field">
+            <label for="prompt-view-folder">폴더</label>
+            <div class="prompt-view-modal__folder-select">
+              <select id="prompt-view-folder" name="folder" class="prompt-view-modal__select" disabled>
+              </select>
+              <input type="text" id="prompt-view-new-folder" name="newFolder" placeholder="폴더 이름" class="prompt-view-modal__input" style="display: none;">
+            </div>
+          </div>
+          <div class="prompt-view-modal__field">
+            <label for="prompt-view-name">프롬프트 이름</label>
+            <input type="text" id="prompt-view-name" name="name" placeholder="프롬프트 이름" required maxlength="50" class="prompt-view-modal__input" readonly>
+          </div>
+          <div class="prompt-view-modal__field">
+            <label for="prompt-view-content">프롬프트 내용</label>
+            <textarea id="prompt-view-content" name="content" placeholder="프롬프트 내용을 입력하세요" required rows="8" class="prompt-view-modal__textarea" readonly></textarea>
+          </div>
+          <div class="prompt-view-modal__actions">
+            <button type="button" class="prompt-view-modal__paste" id="prompt-view-paste-btn">입력창에 붙여넣기</button>
+            <button type="button" class="prompt-view-modal__edit" id="prompt-view-edit-btn">수정</button>
+            <button type="submit" class="prompt-view-modal__save" id="prompt-view-save-btn" style="display: none;">저장</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 이미지 저장 모달 -->
+    <div class="image-save-modal" id="image-save-modal" style="display: none;">
+      <div class="image-save-modal__overlay"></div>
+      <div class="image-save-modal__content">
+        <div class="image-save-modal__header">
+          <h2 class="image-save-modal__title">이미지 저장</h2>
+          <button class="image-save-modal__close" id="image-save-modal-close-btn" aria-label="닫기">×</button>
+        </div>
+        <form class="image-save-modal__form" id="image-save-form">
+          <div class="image-save-modal__field">
+            <label for="image-folder">폴더</label>
+            <div class="image-save-modal__folder-select">
+              <select id="image-folder" name="folder" class="image-save-modal__select">
+                <option value="">새 폴더 생성...</option>
+              </select>
+              <input type="text" id="image-new-folder" name="newFolder" placeholder="폴더 이름" class="image-save-modal__input" style="display: none;">
+            </div>
+          </div>
+          <div class="image-save-modal__field">
+            <label for="image-name">이미지 이름</label>
+            <input type="text" id="image-name" name="name" placeholder="이미지 이름" required maxlength="50" class="image-save-modal__input">
+          </div>
+          <div class="image-save-modal__field">
+            <label for="image-preview">이미지 미리보기</label>
+            <div class="image-save-modal__preview" id="image-preview">
+              <img id="image-preview-img" src="" alt="미리보기" style="display: none;">
+              <p id="image-preview-placeholder" style="text-align: center; color: var(--text-secondary); padding: 20px; margin: 0;">이미지가 표시됩니다</p>
+            </div>
+            <input type="file" id="image-file-input" name="file" accept="image/*" class="image-save-modal__file-input" style="display: none;">
+            <button type="button" class="image-save-modal__upload-btn" id="image-upload-btn">이미지 선택</button>
+          </div>
+          <div class="image-save-modal__actions">
+            <button type="button" class="image-save-modal__cancel" id="image-save-modal-cancel-btn">취소</button>
+            <button type="submit" class="image-save-modal__submit">저장</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 이미지 보기 모달 -->
+    <div class="image-view-modal" id="image-view-modal" style="display: none;">
+      <div class="image-view-modal__overlay"></div>
+      <div class="image-view-modal__content">
+        <div class="image-view-modal__header">
+          <h2 class="image-view-modal__title">이미지 보기</h2>
+          <button class="image-view-modal__close" id="image-view-modal-close-btn" aria-label="닫기">×</button>
+        </div>
+        <form class="image-view-modal__form" id="image-view-form">
+          <div class="image-view-modal__field">
+            <label for="image-view-folder">폴더</label>
+            <div class="image-view-modal__folder-select">
+              <select id="image-view-folder" name="folder" class="image-view-modal__select" disabled>
+              </select>
+            </div>
+          </div>
+          <div class="image-view-modal__field">
+            <label for="image-view-name">이미지 이름</label>
+            <input type="text" id="image-view-name" name="name" placeholder="이미지 이름" required maxlength="50" class="image-view-modal__input" readonly>
+          </div>
+          <div class="image-view-modal__field">
+            <label for="image-view-preview">이미지</label>
+            <div class="image-view-modal__preview">
+              <img id="image-view-img" src="" alt="이미지" style="display: block;">
+            </div>
+          </div>
+          <div class="image-view-modal__actions">
+            <button type="button" class="image-view-modal__cancel" id="image-view-modal-cancel-btn">닫기</button>
+            <button type="button" class="image-view-modal__download" id="image-view-download-btn">다운로드</button>
+            <button type="button" class="image-view-modal__edit" id="image-view-edit-btn">수정</button>
+            <button type="submit" class="image-view-modal__save" id="image-view-save-btn" style="display: none;">저장</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 통합 저장 모달 (프롬프트 + 이미지) -->
+    <div class="unified-save-modal" id="unified-save-modal" style="display: none;">
+      <div class="unified-save-modal__overlay"></div>
+      <div class="unified-save-modal__content">
+        <div class="unified-save-modal__header">
+          <h2 class="unified-save-modal__title">Save</h2>
+          <button type="button" class="unified-save-modal__close" id="unified-save-modal-close" aria-label="닫기">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <form class="unified-save-modal__form" id="unified-save-form">
+          <!-- 이미지 여러 장 -->
+          <div class="unified-save-modal__field">
+            <label>이미지</label>
+            <div class="unified-save-modal__images-wrap">
+              <div class="unified-save-modal__images-list" id="unified-save-images-list"></div>
+              <div class="unified-save-modal__preview unified-save-modal__preview--add" id="unified-save-preview">
+                <div id="unified-save-preview-placeholder" class="unified-save-modal__preview-placeholder">
+                  <span class="material-symbols-outlined" style="font-size: 28px;">add_photo_alternate</span>
+                  <span>이미지 추가</span>
+                </div>
+              </div>
+            </div>
+            <input type="file" id="unified-save-file-input" accept="image/*" multiple hidden>
+            <div class="unified-save-modal__image-actions">
+              <button type="button" class="unified-save-modal__btn-secondary" id="unified-save-paste-btn">클립보드에서 붙여넣기</button>
+            </div>
+          </div>
+          <!-- 제목 -->
+          <div class="unified-save-modal__field">
+            <label for="unified-save-title">Prompt title</label>
+            <input type="text" id="unified-save-title" name="title" placeholder="Enter a title" class="unified-save-modal__input" maxlength="50">
+          </div>
+          <!-- 프롬프트 -->
+          <div class="unified-save-modal__field">
+            <label for="unified-save-prompt">Prompt</label>
+            <textarea id="unified-save-prompt" name="prompt" placeholder="Please enter the prompt" rows="4" class="unified-save-modal__textarea"></textarea>
+          </div>
+          <button type="submit" class="unified-save-modal__submit" id="unified-save-submit-btn">추가하기</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Upcoming Payment 모달 (Figma 451-8167) -->
+    <div class="upcoming-payment-modal" id="upcoming-payment-modal" role="dialog" aria-modal="true" aria-labelledby="upcoming-payment-modal-title" hidden>
+      <div class="upcoming-payment-modal__backdrop" id="upcoming-payment-modal-backdrop"></div>
+      <div class="upcoming-payment-modal__box">
+        <div class="upcoming-payment-modal__header">
+          <h2 class="upcoming-payment-modal__title" id="upcoming-payment-modal-title">Upcoming Payment</h2>
+          <button type="button" class="upcoming-payment-modal__close" id="upcoming-payment-modal-close" aria-label="닫기">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <form class="upcoming-payment-modal__form" id="upcoming-payment-form">
+          <div class="upcoming-payment-modal__field">
+            <label class="upcoming-payment-modal__label" for="upcoming-payment-ai-name">AI name</label>
+            <input type="text" class="upcoming-payment-modal__input" id="upcoming-payment-ai-name" placeholder="Program name" />
+          </div>
+          <div class="upcoming-payment-modal__field">
+            <span class="upcoming-payment-modal__label">Time setting</span>
+            <div class="upcoming-payment-modal__dates">
+              <div class="upcoming-payment-modal__date-wrap">
+                <img src="assets/icons/calendar_check.svg" alt="" class="upcoming-payment-modal__date-icon" aria-hidden="true">
+                <input type="date" class="upcoming-payment-modal__input upcoming-payment-modal__input--date" id="upcoming-payment-start" aria-label="시작일" />
+              </div>
+              <span class="upcoming-payment-modal__date-range-line" aria-hidden="true"></span>
+              <div class="upcoming-payment-modal__date-wrap">
+                <img src="assets/icons/calendar_check.svg" alt="" class="upcoming-payment-modal__date-icon" aria-hidden="true">
+                <input type="date" class="upcoming-payment-modal__input upcoming-payment-modal__input--date" id="upcoming-payment-end" aria-label="결제일(종료일)" />
+              </div>
+            </div>
+            <div class="upcoming-payment-modal__duration">
+              <button type="button" class="upcoming-payment-modal__duration-btn is-selected" data-duration="1">1 month</button>
+              <button type="button" class="upcoming-payment-modal__duration-btn" data-duration="3">3 months</button>
+              <button type="button" class="upcoming-payment-modal__duration-btn" data-duration="6">6 months</button>
+              <button type="button" class="upcoming-payment-modal__duration-btn" data-duration="12">1 year</button>
+              <button type="button" class="upcoming-payment-modal__duration-btn" data-duration="custom">Custom</button>
+            </div>
+          </div>
+          <div class="upcoming-payment-modal__field">
+            <label class="upcoming-payment-modal__label" for="upcoming-payment-memo">Memo</label>
+            <textarea class="upcoming-payment-modal__textarea" id="upcoming-payment-memo" placeholder="Add notes" rows="3"></textarea>
+          </div>
+          <div class="upcoming-payment-modal__actions">
+            <button type="submit" class="upcoming-payment-modal__submit">Complete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- My Tasks 모달 (Figma 451-8483) -->
+    <div class="my-tasks-modal" id="my-tasks-modal" role="dialog" aria-modal="true" aria-labelledby="my-tasks-modal-title" hidden>
+      <div class="my-tasks-modal__backdrop" id="my-tasks-modal-backdrop"></div>
+      <div class="my-tasks-modal__box">
+        <div class="my-tasks-modal__header">
+          <h2 class="my-tasks-modal__title" id="my-tasks-modal-title">My Tasks</h2>
+          <button type="button" class="my-tasks-modal__close" id="my-tasks-modal-close" aria-label="닫기">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <form class="my-tasks-modal__form" id="my-tasks-form">
+          <div class="my-tasks-modal__field">
+            <label class="my-tasks-modal__label" for="my-tasks-title">Title</label>
+            <input type="text" class="my-tasks-modal__input" id="my-tasks-title" placeholder="schedule title" />
+          </div>
+          <div class="my-tasks-modal__field">
+            <span class="my-tasks-modal__label">Time setting</span>
+            <div class="my-tasks-modal__dates">
+              <div class="my-tasks-modal__date-wrap">
+                <img src="assets/icons/calendar_check.svg" alt="" class="my-tasks-modal__date-icon" aria-hidden="true">
+                <input type="date" class="my-tasks-modal__input my-tasks-modal__input--date" id="my-tasks-start" aria-label="시작일" />
+              </div>
+              <span class="my-tasks-modal__date-range-line" aria-hidden="true"></span>
+              <div class="my-tasks-modal__date-wrap">
+                <img src="assets/icons/calendar_check.svg" alt="" class="my-tasks-modal__date-icon" aria-hidden="true">
+                <input type="date" class="my-tasks-modal__input my-tasks-modal__input--date" id="my-tasks-end" aria-label="종료일" />
+              </div>
+            </div>
+          </div>
+          <div class="my-tasks-modal__field">
+            <span class="my-tasks-modal__label">Color</span>
+            <div class="my-tasks-modal__colors">
+              <button type="button" class="my-tasks-modal__color is-selected" data-color="#C9D5FF" aria-label="파랑" style="background:#C9D5FF;"></button>
+              <button type="button" class="my-tasks-modal__color" data-color="#ADBDFF" aria-label="빨강" style="background:#ADBDFF;"></button>
+              <button type="button" class="my-tasks-modal__color" data-color="#879EFF" aria-label="초록" style="background:#879EFF;"></button>
+              <button type="button" class="my-tasks-modal__color" data-color="#708BFF" aria-label="주황" style="background:#708BFF;"></button>
+            </div>
+          </div>
+          <div class="my-tasks-modal__field">
+            <label class="my-tasks-modal__label" for="my-tasks-memo">Memo</label>
+            <textarea class="my-tasks-modal__textarea" id="my-tasks-memo" placeholder="Add notes" rows="3"></textarea>
+          </div>
+          <div class="my-tasks-modal__actions">
+            <button type="submit" class="my-tasks-modal__submit">Complete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+      (function() {
+        if (typeof window.aispace === 'undefined') return;
+        document.body.classList.add('is-electron');
+        if (window.aispace.platform) {
+          document.body.classList.add('platform-' + window.aispace.platform);
+        }
+        var min = document.getElementById('title-bar-minimize');
+        var max = document.getElementById('title-bar-maximize');
+        var close = document.getElementById('title-bar-close');
+        function syncMaximizeIcons(isMax) {
+          var crop = document.querySelector('.title-bar-maximize-icon');
+          var restore = document.querySelector('.title-bar-restore-icon');
+          if (crop && restore) {
+            crop.style.display = isMax ? 'none' : 'inline-flex';
+            restore.style.display = isMax ? 'inline-flex' : 'none';
+          }
+        }
+        if (min) min.addEventListener('click', function() { window.aispace.minimizeWindow(); });
+        if (close) close.addEventListener('click', function() { window.aispace.closeWindow(); });
+        if (max) {
+          max.addEventListener('click', function() {
+            window.aispace.toggleMaximizeWindow().then(syncMaximizeIcons);
+          });
+          window.aispace.isMaximized().then(syncMaximizeIcons);
+          if (typeof window.aispace.onMaximizedChanged === 'function') {
+            window.aispace.onMaximizedChanged(syncMaximizeIcons);
+          }
+        }
+      })();
+    </script>
+    <!-- 공용 확인 모달 -->
+    <div id="confirm-modal" class="confirm-modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title" aria-describedby="confirm-modal-message">
+      <div class="confirm-modal__overlay"></div>
+      <div class="confirm-modal__box">
+        <h3 class="confirm-modal__title" id="confirm-modal-title">Confirm deletion</h3>
+        <p class="confirm-modal__message" id="confirm-modal-message">Are you sure you want to delete this item?</p>
+        <div class="confirm-modal__actions">
+          <button type="button" class="confirm-modal__cancel" id="confirm-modal-cancel">Cancel</button>
+          <button type="button" class="confirm-modal__ok" id="confirm-modal-ok">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info-only alert modal (replaces native alert()) -->
+    <div id="alert-modal" class="confirm-modal" style="display:none;" role="alertdialog" aria-modal="true" aria-labelledby="alert-modal-title" aria-describedby="alert-modal-message">
+      <div class="confirm-modal__overlay"></div>
+      <div class="confirm-modal__box">
+        <h3 class="confirm-modal__title" id="alert-modal-title">Notice</h3>
+        <p class="confirm-modal__message" id="alert-modal-message"></p>
+        <div class="confirm-modal__actions confirm-modal__actions--single">
+          <button type="button" class="confirm-modal__ok" id="alert-modal-ok">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 공용 입력 모달 (Electron에서 prompt() 미지원 대체) -->
+    <div id="prompt-input-modal" class="confirm-modal" style="display:none;">
+      <div class="confirm-modal__overlay"></div>
+      <div class="confirm-modal__box">
+        <h3 class="confirm-modal__title" id="prompt-input-modal-title">Input</h3>
+        <p class="confirm-modal__message" id="prompt-input-modal-message"></p>
+        <input type="text" class="confirm-modal__input" id="prompt-input-modal-input" autocomplete="off" />
+        <div class="confirm-modal__actions">
+          <button type="button" class="confirm-modal__cancel" id="prompt-input-modal-cancel">Cancel</button>
+          <button type="button" class="confirm-modal__ok" id="prompt-input-modal-ok">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 온보딩 가이드 오버레이 -->
+    <div id="onboarding-overlay" class="onboarding-overlay" style="display:none;">
+      <div class="onboarding-overlay__bg" id="onboarding-bg"></div>
+      <div class="onboarding-spotlight" id="onboarding-spotlight"></div>
+      <svg class="onboarding-curve-arrow" id="onboarding-curve-arrow" width="0" height="0" fill="none"></svg>
+      <div class="onboarding-tooltip" id="onboarding-tooltip">
+        <p class="onboarding-tooltip__text" id="onboarding-tooltip-text"></p>
+        <div class="onboarding-tooltip__actions">
+          <button type="button" class="onboarding-tooltip__skip" id="onboarding-skip">건너뛰기</button>
+          <button type="button" class="onboarding-tooltip__next" id="onboarding-next">다음</button>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="./src/js/app.js"></script>
     <script type="module" src="./src/js/realglass-init.js"></script>
   </body>
 </html>
+
