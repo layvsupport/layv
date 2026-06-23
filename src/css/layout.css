@@ -3587,32 +3587,36 @@ body {
   display: none;
 }
 
-/* 커스텀 앱 추가 버튼 (그리드 첫 셀) — 박스·아이콘 중앙 정렬 */
+/* 커스텀 앱 추가 버튼 (그리드 첫 셀) */
 .sidebar__app--add {
-  border: 1.5px dashed rgba(180, 190, 210, 0.5);
-  box-shadow: none;
-  background: white !important;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  background: #eceef2 !important;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .sidebar__app--add:hover {
-  background: rgba(124, 149, 255, 0.08) !important;
-  border-color: rgba(124, 149, 255, 0.4);
+  background: #e2e5ea !important;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar__app--add .sidebar__app-icon {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
 }
 
 .sidebar__app--add .sidebar__app-icon-img {
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
-  filter: brightness(0) saturate(100%) invert(77%) sepia(12%) saturate(1200%) hue-rotate(200deg) brightness(94%) contrast(89%);
+  opacity: 0.45;
+  filter: none;
 }
 
 /* 커스텀 앱 추가 모달 */
@@ -4447,17 +4451,17 @@ body {
 .sidebar__apps {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   box-sizing: border-box;
 }
 
-/* 앱 아이템 래퍼: 아이콘 박스 + 이름(박스 밖 아래) */
+/* 앱 아이템 래퍼: 타일 + 이름(타일 아래) */
 .sidebar__app-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   padding: 0;
   background: transparent;
   border: none;
@@ -4467,18 +4471,17 @@ body {
   box-sizing: border-box;
 }
 
+/* 단일 둥근 사각형 타일 — 내부 박스 없음 */
 .sidebar__app {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 8px 6px 6px;
-  border-radius: 6px;
-  background: white !important;
+  padding: 0;
+  border-radius: 8px;
+  background-color: #ffffff;
   border: none;
   transition: transform 200ms ease, box-shadow 200ms ease;
-  box-shadow: 1.5px 1.5px 2px rgba(194, 202, 234, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   aspect-ratio: 1 / 1;
   min-height: 0;
   max-width: 100%;
@@ -4488,52 +4491,91 @@ body {
   overflow: hidden;
 }
 
-/* RealGlass가 배경을 처리하므로 ::before 제거 */
+.sidebar__app[data-tile-bg="white"] {
+  background-color: #ffffff;
+}
+
+.sidebar__app[data-tile-bg="black"] {
+  background-color: #0a0a0a;
+}
+
+.sidebar__app[data-tile-bg="brand-behance"] {
+  background-color: #1769ff;
+}
+
+.sidebar__app[data-tile-bg="brand-higgsfield"] {
+  background-color: #d1fe17;
+}
+
+.sidebar__app[data-tile-bg="brand-magnific"] {
+  background-color: #2a1040;
+}
+
+.sidebar__app[data-tile-bg="brand-mesh-ai"] {
+  background-color: #110633;
+}
+
+.sidebar__app[data-tile-bg="brand-midjourney"] {
+  background-color: #f8fafb;
+}
+
+/* PNG 아이콘에 배경색이 포함된 앱 — 타일 전체를 채워 색 불일치 방지 */
+.sidebar__app[data-tile-bg="brand-higgsfield"] .sidebar__app-icon,
+.sidebar__app[data-tile-bg="brand-mesh-ai"] .sidebar__app-icon,
+.sidebar__app[data-tile-bg="brand-midjourney"] .sidebar__app-icon {
+  padding: 0;
+}
+
+.sidebar__app[data-tile-bg="brand-higgsfield"] .sidebar__app-icon-img,
+.sidebar__app[data-tile-bg="brand-mesh-ai"] .sidebar__app-icon-img,
+.sidebar__app[data-tile-bg="brand-midjourney"] .sidebar__app-icon-img {
+  object-fit: cover;
+}
 
 .sidebar__app-wrap:hover .sidebar__app,
 .sidebar__app:hover {
   transform: translateY(-2px);
-  box-shadow: 2px 3px 8px rgba(150, 174, 226, 0.35);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .sidebar__app-icon {
-  position: relative;
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  display: grid;
-  place-items: center;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10%;
+  box-sizing: border-box;
   background: transparent;
+  border: none;
+  border-radius: 0;
   box-shadow: none;
   color: var(--text-primary);
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   letter-spacing: 0.3px;
-  flex-shrink: 0;
-  z-index: 10;
+  z-index: 1;
   overflow: hidden;
 }
 
 .sidebar__app-icon-img {
-  width: 30px;
-  height: 30px;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   display: block;
 }
 
 .sidebar__app-name {
-  position: relative;
-  margin-top: 0;
-  color: #616161;
-  font-size: 0.625rem;
+  margin: 0;
+  color: #777777;
+  font-size: 0.6rem;
   font-weight: 400;
   text-align: center;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  line-height: 1.1;
-  z-index: 10;
+  line-height: 1.2;
 }
 
 /* 플로팅 컨트롤 스타일 - 캡슐형 */

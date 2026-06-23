@@ -2160,6 +2160,28 @@ function handleHomeCalendarMainCellClick(e, cellEl) {
   showHomeCalendarDayPopover(e, cellEl);
 }
 
+function resolveHomeCalendarMainContextCell(e) {
+  const directCell = e.target.closest('.home-calendar-main__cell');
+  if (directCell) return directCell;
+
+  const weekEl = e.target.closest('.home-calendar-main__week');
+  if (!weekEl) return null;
+  if (!e.target.closest('.home-calendar-main__event-span, .home-calendar-main__week-bars')) return null;
+
+  const weekRect = weekEl.getBoundingClientRect();
+  if (!weekRect.width) return null;
+  const col = Math.min(6, Math.max(0, Math.floor(((e.clientX - weekRect.left) / weekRect.width) * 7)));
+  return weekEl.querySelectorAll('.home-calendar-main__cell')[col] || null;
+}
+
+function handleHomeCalendarMainContextMenu(e) {
+  const cellEl = resolveHomeCalendarMainContextCell(e);
+  if (!cellEl) return;
+  e.preventDefault();
+  e.stopPropagation();
+  showHomeCalendarDayPopover(e, cellEl);
+}
+
 function showHomeCalendarDayPopover(e, cellEl) {
   e.stopPropagation();
   let pop = document.getElementById('home-calendar-day-popover');
@@ -2172,14 +2194,23 @@ function showHomeCalendarDayPopover(e, cellEl) {
     <button type="button" data-action="tasks"><span class="home-calendar-day-popover__icon"><img src="assets/icons/check.svg" alt=""></span><span>My Tasks</span></button>
   `;
   document.body.appendChild(pop);
-  const rect = cellEl.getBoundingClientRect();
-  pop.style.left = `${rect.left}px`;
-  pop.style.top = `${rect.bottom + 4}px`;
+  if (e.type === 'contextmenu' && Number.isFinite(e.clientX) && Number.isFinite(e.clientY)) {
+    pop.style.left = `${e.clientX}px`;
+    pop.style.top = `${e.clientY}px`;
+  } else {
+    const rect = cellEl.getBoundingClientRect();
+    pop.style.left = `${rect.left}px`;
+    pop.style.top = `${rect.bottom + 4}px`;
+  }
   const close = () => {
     pop.remove();
     document.removeEventListener('click', close);
+    document.removeEventListener('contextmenu', close);
   };
-  setTimeout(() => document.addEventListener('click', close), 0);
+  setTimeout(() => {
+    document.addEventListener('click', close);
+    document.addEventListener('contextmenu', close);
+  }, 0);
   pop.addEventListener('click', (ev) => {
     ev.stopPropagation();
     const clickedDate = cellEl.getAttribute('data-date') || cellEl.dataset.date || '';
@@ -2223,6 +2254,12 @@ function initHomeCalendarPanel() {
   miniNext?.addEventListener('click', goNext);
   mainPrev?.addEventListener('click', goPrev);
   mainNext?.addEventListener('click', goNext);
+
+  const mainGrid = document.getElementById('home-calendar-main-grid');
+  if (mainGrid && !mainGrid.dataset.contextMenuBound) {
+    mainGrid.dataset.contextMenuBound = '1';
+    mainGrid.addEventListener('contextmenu', handleHomeCalendarMainContextMenu);
+  }
 }
 
 function getActiveHomeTab() {
@@ -3047,24 +3084,18 @@ function showHomeSavedFolderContextMenu(event, folderId, nameBtn, anchorEl) {
 
 const MAX_WINDOWS = 4;
 
+/** 기본 앱 그리드 순서 (5열, + 버튼 제외) — 참조 이미지와 동일 */
 const appCatalog = [
   {
-    id: 'conversation',
-    name: '대화형 AI',
+    id: 'default',
+    name: 'AI 앱',
     apps: [
       {
-        id: 'chatgpt',
-        name: 'ChatGPT',
-        url: 'https://chatgpt.com/',
-        icon: 'CG',
-        accent: 'linear-gradient(135deg, rgba(10, 132, 255, 0.45), rgba(100, 210, 255, 0.35))',
-      },
-      {
-        id: 'claude',
-        name: 'Claude',
-        url: 'https://claude.ai/',
-        icon: 'CL',
-        accent: 'linear-gradient(135deg, rgba(175, 82, 222, 0.45), rgba(255, 204, 0, 0.35))',
+        id: 'google',
+        name: 'Google',
+        url: 'https://www.google.com/',
+        icon: 'G',
+        accent: 'linear-gradient(135deg, rgba(66, 133, 244, 0.35), rgba(234, 67, 53, 0.25))',
       },
       {
         id: 'gemini',
@@ -3074,18 +3105,12 @@ const appCatalog = [
         accent: 'linear-gradient(135deg, rgba(48, 176, 255, 0.45), rgba(123, 82, 255, 0.3))',
       },
       {
-        id: 'pi',
-        name: 'Pi',
-        url: 'https://pi.ai/',
-        icon: 'PI',
-        accent: 'linear-gradient(135deg, rgba(255, 159, 10, 0.45), rgba(255, 69, 58, 0.3))',
+        id: 'chatgpt',
+        name: 'ChatGPT',
+        url: 'https://chatgpt.com/',
+        icon: 'CG',
+        accent: 'linear-gradient(135deg, rgba(10, 132, 255, 0.45), rgba(100, 210, 255, 0.35))',
       },
-    ],
-  },
-  {
-    id: 'creative',
-    name: '이미지 & 비디오',
-    apps: [
       {
         id: 'midjourney',
         name: 'Midjourney',
@@ -3094,33 +3119,6 @@ const appCatalog = [
         accent: 'linear-gradient(135deg, rgba(255, 114, 92, 0.45), rgba(255, 59, 48, 0.3))',
       },
       {
-        id: 'dalle',
-        name: 'DALL·E',
-        url: 'https://labs.openai.com/',
-        icon: 'DE',
-        accent: 'linear-gradient(135deg, rgba(255, 214, 10, 0.45), rgba(255, 59, 48, 0.25))',
-      },
-      {
-        id: 'runwayml',
-        name: 'RunwayML',
-        url: 'https://runwayml.com/',
-        icon: 'RW',
-        accent: 'linear-gradient(135deg, rgba(88, 86, 214, 0.45), rgba(0, 122, 255, 0.3))',
-      },
-      {
-        id: 'pika',
-        name: 'Pika Labs',
-        url: 'https://pika.art/',
-        icon: 'PK',
-        accent: 'linear-gradient(135deg, rgba(255, 69, 58, 0.45), rgba(255, 149, 0, 0.3))',
-      },
-    ],
-  },
-  {
-    id: 'research',
-    name: '리서치 & 문서',
-    apps: [
-      {
         id: 'perplexity',
         name: 'Perplexity',
         url: 'https://www.perplexity.ai/',
@@ -3128,66 +3126,40 @@ const appCatalog = [
         accent: 'linear-gradient(135deg, rgba(90, 200, 250, 0.45), rgba(0, 113, 164, 0.35))',
       },
       {
-        id: 'notion-ai',
-        name: 'Notion AI',
-        url: 'https://www.notion.so/product/ai',
-        icon: 'NA',
-        accent: 'linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(174, 174, 178, 0.25))',
+        id: 'claude',
+        name: 'Claude',
+        url: 'https://claude.ai/',
+        icon: 'CL',
+        accent: 'linear-gradient(135deg, rgba(175, 82, 222, 0.45), rgba(255, 204, 0, 0.35))',
       },
       {
-        id: 'elicit',
-        name: 'Elicit',
-        url: 'https://elicit.org/',
-        icon: 'EL',
-        accent: 'linear-gradient(135deg, rgba(52, 199, 89, 0.45), rgba(48, 209, 88, 0.3))',
+        id: 'behance',
+        name: 'Behance',
+        url: 'https://www.behance.net/',
+        icon: 'BE',
+        accent: 'linear-gradient(135deg, rgba(23, 105, 255, 0.55), rgba(0, 87, 255, 0.35))',
       },
       {
-        id: 'mem',
-        name: 'Mem',
-        url: 'https://get.mem.ai/',
-        icon: 'MM',
-        accent: 'linear-gradient(135deg, rgba(255, 69, 58, 0.4), rgba(10, 132, 255, 0.3))',
-      },
-    ],
-  },
-  {
-    id: 'coding',
-    name: '코딩 어시스턴트',
-    apps: [
-      {
-        id: 'github-copilot',
-        name: 'GitHub Copilot',
-        url: 'https://github.com/copilot',
-        icon: 'GC',
-        accent: 'linear-gradient(135deg, rgba(52, 199, 89, 0.45), rgba(48, 209, 88, 0.3))',
+        id: 'pinterest',
+        name: 'Pinterest',
+        url: 'https://www.pinterest.com/',
+        icon: 'PI',
+        accent: 'linear-gradient(135deg, rgba(230, 0, 35, 0.4), rgba(189, 8, 28, 0.3))',
       },
       {
-        id: 'cursor',
-        name: 'Cursor',
-        url: 'https://www.cursor.com/',
-        icon: 'CS',
-        accent: 'linear-gradient(135deg, rgba(94, 92, 230, 0.45), rgba(52, 199, 89, 0.3))',
+        id: 'krea',
+        name: 'Krea',
+        url: 'https://www.krea.ai/',
+        icon: 'KR',
+        accent: 'linear-gradient(135deg, rgba(0, 0, 0, 0.15), rgba(120, 120, 120, 0.2))',
       },
       {
-        id: 'replit-ghostwriter',
-        name: 'Replit Ghostwriter',
-        url: 'https://replit.com/site/ghostwriter',
-        icon: 'RG',
-        accent: 'linear-gradient(135deg, rgba(255, 45, 85, 0.45), rgba(255, 159, 10, 0.3))',
+        id: 'higgsfield',
+        name: 'Higgsfield',
+        url: 'https://higgsfield.ai/',
+        icon: 'HF',
+        accent: 'linear-gradient(135deg, rgba(196, 248, 42, 0.55), rgba(164, 230, 0, 0.35))',
       },
-      {
-        id: 'codewhisperer',
-        name: 'CodeWhisperer',
-        url: 'https://aws.amazon.com/codewhisperer/',
-        icon: 'CW',
-        accent: 'linear-gradient(135deg, rgba(48, 209, 88, 0.45), rgba(10, 132, 255, 0.3))',
-      },
-    ],
-  },
-  {
-    id: 'audio',
-    name: '음성 & 음악',
-    apps: [
       {
         id: 'suno',
         name: 'Suno',
@@ -3196,18 +3168,25 @@ const appCatalog = [
         accent: 'linear-gradient(135deg, rgba(255, 45, 85, 0.45), rgba(88, 86, 214, 0.3))',
       },
       {
-        id: 'elevenlabs',
-        name: 'ElevenLabs',
-        url: 'https://elevenlabs.io/',
-        icon: 'EV',
-        accent: 'linear-gradient(135deg, rgba(255, 159, 10, 0.45), rgba(255, 69, 58, 0.3))',
+        id: 'magnific',
+        name: 'Magnific',
+        url: 'https://magnific.ai/',
+        icon: 'MG',
+        accent: 'linear-gradient(135deg, rgba(88, 28, 135, 0.55), rgba(45, 16, 64, 0.4))',
       },
       {
-        id: 'voiceflow',
-        name: 'Voiceflow',
-        url: 'https://www.voiceflow.com/',
-        icon: 'VF',
-        accent: 'linear-gradient(135deg, rgba(10, 132, 255, 0.45), rgba(88, 86, 214, 0.3))',
+        id: 'kling',
+        name: 'Kling',
+        url: 'https://klingai.com/',
+        icon: 'KL',
+        accent: 'linear-gradient(135deg, rgba(10, 10, 10, 0.5), rgba(40, 40, 40, 0.35))',
+      },
+      {
+        id: 'mesh-ai',
+        name: 'Mesh AI',
+        url: 'https://www.meshy.ai/',
+        icon: 'MS',
+        accent: 'linear-gradient(135deg, rgba(16, 46, 31, 0.55), rgba(10, 31, 20, 0.4))',
       },
     ],
   },
@@ -3327,6 +3306,63 @@ function getAppCustomIcon(app) {
   return app.iconImage || app.iconData || null;
 }
 
+/** 기본 AI 앱 로컬 컬러 브랜드 로고 (LobeHub color / 공식 CDN / Wikimedia) */
+const APP_ICON_SVGS = {
+  google: 'assets/icons/ai-apps/google.png',
+  gemini: 'assets/icons/ai-apps/gemini.svg',
+  chatgpt: 'assets/icons/ai-apps/chatgpt.png',
+  midjourney: 'assets/icons/ai-apps/midjourney.png',
+  perplexity: 'assets/icons/ai-apps/perplexity.svg',
+  claude: 'assets/icons/ai-apps/claude.svg',
+  behance: 'assets/icons/ai-apps/behance.svg',
+  pinterest: 'assets/icons/ai-apps/pinterest.svg',
+  krea: 'assets/icons/ai-apps/krea.svg',
+  higgsfield: 'assets/icons/ai-apps/higgsfield.png',
+  suno: 'assets/icons/ai-apps/suno.svg',
+  magnific: 'assets/icons/ai-apps/magnific.png',
+  kling: 'assets/icons/ai-apps/kling.ico',
+  'mesh-ai': 'assets/icons/ai-apps/mesh-ai.png',
+};
+
+/** 로컬 아이콘 교체 시 Electron/브라우저 캐시 무효화 (아이콘 변경 시 값을 올려 주세요) */
+const APP_LOCAL_ICON_CACHE_BUST = '20250618';
+
+function bustLocalAssetCache(url) {
+  if (!url || url.startsWith('data:') || url.includes('?')) return url;
+  if (!url.startsWith('assets/')) return url;
+  return `${url}?v=${APP_LOCAL_ICON_CACHE_BUST}`;
+}
+
+function getAppLocalIconUrl(app) {
+  if (!app?.id) return null;
+  const path = APP_ICON_SVGS[app.id];
+  return path ? bustLocalAssetCache(path) : null;
+}
+
+/** 사이드바 타일 배경 — white | black | brand-* */
+const APP_TILE_BACKGROUNDS = {
+  google: 'white',
+  gemini: 'white',
+  chatgpt: 'white',
+  midjourney: 'brand-midjourney',
+  claude: 'white',
+  pinterest: 'white',
+  krea: 'white',
+  perplexity: 'black',
+  suno: 'black',
+  kling: 'black',
+  behance: 'brand-behance',
+  higgsfield: 'brand-higgsfield',
+  magnific: 'brand-magnific',
+  'mesh-ai': 'brand-mesh-ai',
+};
+
+function getAppTileBackground(app) {
+  if (!app?.id) return 'white';
+  if (isCustomAppId(app.id)) return 'white';
+  return APP_TILE_BACKGROUNDS[app.id] || 'white';
+}
+
 function getFaviconUrlForWebsite(url, size = 32) {
   if (!url) return null;
   try {
@@ -3337,12 +3373,14 @@ function getFaviconUrlForWebsite(url, size = 32) {
   }
 }
 
-// 앱 URL에서 파비콘 이미지 URL 반환 (커스텀 앱은 iconImage/iconData 사용)
+// 앱 아이콘 URL: 사용자 업로드 → 로컬 SVG → Google favicon
 function getAppFaviconUrl(app, size = 32) {
   if (!app) return null;
   const customIcon = getAppCustomIcon(app);
   if (customIcon) return customIcon;
   if (app.iconImage || app.iconData) return app.iconImage || app.iconData;
+  const localIcon = getAppLocalIconUrl(app);
+  if (localIcon) return localIcon;
   return getFaviconUrlForWebsite(app.url, size);
 }
 
@@ -3569,54 +3607,39 @@ const CANVAS_STORAGE_KEY = 'aispace-canvases';
 
 // 명령어 매핑: AI 이름과 약어를 연결
 const commandMap = {
-  // 대화형 AI
+  '/g': 'google',
+  '/google': 'google',
+  '/gem': 'gemini',
+  '/gemini': 'gemini',
   '/c': 'chatgpt',
   '/chat': 'chatgpt',
   '/chatgpt': 'chatgpt',
-  '/cl': 'claude',
-  '/claude': 'claude',
-  '/g': 'gemini',
-  '/gem': 'gemini',
-  '/gemini': 'gemini',
-  '/p': 'pi',
-  '/pi': 'pi',
-  // 이미지 & 비디오
   '/m': 'midjourney',
   '/mj': 'midjourney',
   '/mid': 'midjourney',
   '/midjourney': 'midjourney',
-  '/d': 'dalle',
-  '/dalle': 'dalle',
-  '/r': 'runwayml',
-  '/run': 'runwayml',
-  '/runway': 'runwayml',
-  '/pk': 'pika',
-  '/pika': 'pika',
-  // 리서치 & 문서
   '/px': 'perplexity',
   '/perp': 'perplexity',
   '/perplexity': 'perplexity',
-  '/n': 'notion-ai',
-  '/notion': 'notion-ai',
-  '/e': 'elicit',
-  '/elicit': 'elicit',
-  '/mem': 'mem',
-  // 코딩 어시스턴트
-  '/gc': 'github-copilot',
-  '/copilot': 'github-copilot',
-  '/cs': 'cursor',
-  '/cursor': 'cursor',
-  '/rg': 'replit-ghostwriter',
-  '/replit': 'replit-ghostwriter',
-  '/cw': 'codewhisperer',
-  '/code': 'codewhisperer',
-  // 음성 & 음악
+  '/cl': 'claude',
+  '/claude': 'claude',
+  '/be': 'behance',
+  '/behance': 'behance',
+  '/pin': 'pinterest',
+  '/pinterest': 'pinterest',
+  '/kr': 'krea',
+  '/krea': 'krea',
+  '/hf': 'higgsfield',
+  '/higgs': 'higgsfield',
+  '/higgsfield': 'higgsfield',
   '/s': 'suno',
   '/suno': 'suno',
-  '/ev': 'elevenlabs',
-  '/eleven': 'elevenlabs',
-  '/v': 'voiceflow',
-  '/voice': 'voiceflow',
+  '/mg': 'magnific',
+  '/magnific': 'magnific',
+  '/kl': 'kling',
+  '/kling': 'kling',
+  '/mesh': 'mesh-ai',
+  '/meshai': 'mesh-ai',
 };
 
 // 기본 라이트 모드 적용
@@ -3683,6 +3706,7 @@ function createSidebarItem(app) {
 
   const box = document.createElement('div');
   box.className = 'sidebar__app';
+  box.dataset.tileBg = getAppTileBackground(app);
 
   const iconHolder = document.createElement('div');
   iconHolder.className = 'sidebar__app-icon';
@@ -4007,8 +4031,13 @@ function initEditLinkModal() {
     delete modal.dataset.iconDataUrl;
     if (iconInput) iconInput.value = '';
     if (iconUrlInput) iconUrlInput.value = '';
-    const websiteUrl = (document.getElementById('edit-link-url')?.value || '').trim();
-    setEditLinkIconPreview(modal, getFaviconUrlForWebsite(websiteUrl, 64) || '');
+    const appId = modal.dataset.appId;
+    const app = appId ? appLookup.get(appId) : null;
+    const websiteUrl = (document.getElementById('edit-link-url')?.value || app?.url || '').trim();
+    const previewApp = app
+      ? { ...app, url: websiteUrl, iconImage: undefined, iconData: undefined }
+      : { url: websiteUrl };
+    setEditLinkIconPreview(modal, getAppFaviconUrl(previewApp, 64) || '');
   });
 
   form?.addEventListener('submit', (e) => {
@@ -5609,6 +5638,7 @@ function mountAppContent(container, app) {
 
     webview.addEventListener('did-finish-load', () => {
       loadingCtl.releaseLoadingOverlay('did-finish-load');
+      container.querySelectorAll('.ai-window__frame-status--error').forEach((el) => el.remove());
     });
 
     webview.addEventListener('did-fail-load', (event) => {
@@ -5661,15 +5691,34 @@ function mountAppContent(container, app) {
 }
 
 function refreshAppContent(container, app) {
-  if (!container) return;
-  const existing = container.querySelector('[data-app-id]');
-  if (existing && 'reload' in existing) {
-    existing.reload();
-  } else if (existing && existing.tagName === 'IFRAME') {
-    existing.src = app.url;
-  } else {
-    mountAppContent(container, app);
+  if (!container || !app) return;
+  clearFrameChrome(container);
+
+  const targetUrl = normalizeAppUrl(app.url);
+  const existing = container.querySelector('webview[data-app-id], iframe[data-app-id]');
+
+  if (existing?.tagName === 'WEBVIEW') {
+    existing.__frameLoadingController?.dispose();
+    const loadingCtl = createFrameLoadingController(container, app, existing, targetUrl);
+    existing.__frameLoadingController = loadingCtl;
+    loadingCtl.scheduleFallbacks();
+    loadingCtl.showLoadingIfInitial();
+    try {
+      if (typeof existing.reload === 'function') {
+        existing.reload();
+        return;
+      }
+    } catch (err) {
+      console.warn('[refreshAppContent] webview.reload failed', err);
+    }
   }
+
+  if (existing?.tagName === 'IFRAME') {
+    existing.src = targetUrl;
+    return;
+  }
+
+  mountAppContent(container, app);
 }
 
 function unmountAppContent(container, _app) {
